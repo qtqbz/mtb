@@ -9,9 +9,6 @@
 #ifndef MTB_DYNARR_INIT_COUNT
 #define MTB_DYNARR_INIT_COUNT 12
 #endif
-#ifndef MTB_DYNARR_GROWTH_FACTOR
-#define MTB_DYNARR_GROWTH_FACTOR 2
-#endif
 
 typedef struct mtb_dynarr MtbDynArr;
 struct mtb_dynarr
@@ -28,8 +25,7 @@ struct mtb_dynarr
 
 #define _mtb_dynarr_foreach(a, i, _a, _e) \
     __auto_type _a = (a); \
-    void *_e = _a->items + _a->length * _a->itemSize; \
-    for (void *i = _a->items; i < _e; i += _a->itemSize)
+    for (void *_e = _a->items + _a->length * _a->itemSize, *i = _a->items; i < _e; i += _a->itemSize)
 #define mtb_dynarr_foreach(a, i) _mtb_dynarr_foreach(a, i, mtb_id(_a), mtb_id(_e))
 
 public void mtb_dynarr_init(MtbArena *arena, MtbDynArr *array, u64 itemSize);
@@ -42,6 +38,8 @@ public void *mtb_dynarr_insert_n(MtbDynArr *array, u64 from, u64 n);
 public void *mtb_dynarr_remove_n(MtbDynArr *array, u64 from, u64 n);
 #define mtb_dynarr_remove(a, i) mtb_dynarr_remove_n(a, i, 1)
 public void *mtb_dynarr_get(MtbDynArr *array, u64 at);
+
+public void *mtb_dynarr_copy_n(MtbDynArr *array, u64 from, void *src, u64 n);
 
 
 /* Stack API */
@@ -61,6 +59,13 @@ public void *mtb_dynarr_get(MtbDynArr *array, u64 at);
     mtb_dynarr_get(_s, (_s)->length - 1); \
 })
 #define mtb_dynarr_top(s) _mtb_dynarr_top(s, mtb_id(_s))
+
+
+/* Queue API */
+
+#define mtb_dynarr_enq(a) mtb_dynarr_insert(a, 0)
+#define mtb_dynarr_deq(a) mtb_dynarr_pop(a)
+#define mtb_dynarr_front(a) mtb_dynarr_top(a)
 
 
 #endif //MTB_MTB_DYNARR_H
