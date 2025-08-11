@@ -87,21 +87,21 @@ global u64 U64_MAXM = UINT64_MAX;
     t _a = (a); \
     t _b = (b); \
     t _r; \
-    __builtin_add_overflow(_a, _b, &_r); \
+    mtb_assert_always(!__builtin_add_overflow(_a, _b, &_r)); \
     _r; \
 })
 #define _mtb_sub(a, b, t, _a, _b, _r) ({ \
     t _a = (a); \
     t _b = (b); \
     t _r; \
-    __builtin_sub_overflow(_a, _b, &_r); \
+    mtb_assert_always(!__builtin_sub_overflow(_a, _b, &_r)); \
     _r; \
 })
 #define _mtb_mul(a, b, t, _a, _b, _r) ({ \
     t _a = (a); \
     t _b = (b); \
     t _r; \
-    __builtin_mul_overflow(_a, _b, &_r); \
+    mtb_assert_always(!__builtin_mul_overflow(_a, _b, &_r)); \
     _r; \
 })
 
