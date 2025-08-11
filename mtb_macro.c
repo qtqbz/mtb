@@ -1,3 +1,6 @@
+#include "mtb_macro.h"
+
+
 #ifdef MTB_MACRO_TESTS
 
 #include <assert.h>

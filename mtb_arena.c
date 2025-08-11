@@ -3,6 +3,8 @@
 #include <sys/mman.h>
 #include <unistd.h>
 
+#include "mtb_arena.h"
+
 
 #define MTB_ARENA_DEF_ALLOCATOR_HEADER_SIZE sizeof(u64)
 

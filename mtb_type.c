@@ -1,3 +1,6 @@
+#include "mtb_type.h"
+
+
 #ifdef MTB_TYPE_TESTS
 
 #include <assert.h>

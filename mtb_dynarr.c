@@ -1,5 +1,7 @@
 #include <string.h>
 
+#include "mtb_dynarr.h"
+
 
 public void
 mtb_dynarr_init(MtbArena *arena, MtbDynArr *array, u64 itemSize)

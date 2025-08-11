@@ -1,3 +1,6 @@
+#include "mtb_list.h"
+
+
 public void
 mtb_list_init(MtbListNode *head)
 {
