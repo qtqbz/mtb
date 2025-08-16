@@ -6,10 +6,6 @@
 #include "mtb_arena.h"
 
 
-#ifndef MTB_DYNARR_INIT_COUNT
-#define MTB_DYNARR_INIT_COUNT 12
-#endif
-
 typedef struct mtb_dynarr MtbDynArr;
 struct mtb_dynarr
 {

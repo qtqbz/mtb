@@ -6,7 +6,7 @@ This is a collection of reusable C utils.
 ### Requirements
 
 1. GCC or Clang
-2. at least C99
+2. C99+ codebase
 
 
 ### Contents
@@ -16,7 +16,7 @@ This is a collection of reusable C utils.
 - [mtb_type.h](./mtb_type.h) - common types and operations on them.
 - [mtb_list.h](./mtb_list.h) - doubly linked list.
 - [mtb_arena.h](./mtb_arena.h) - arena allocator.
-- [mtb_dynarr.h](./mtb_dynarr.h) - dynamic array.
+- [mtb_dynarr.h](./mtb_dynarr.h) - dynamically growing array (aka vector).
 - [tests.h](./tests.c) - runs all unit tests.
 
 

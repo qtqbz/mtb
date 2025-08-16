@@ -34,13 +34,11 @@ mtb_dynarr_insert_n(MtbDynArr *array, u64 from, u64 n)
     mtb_assert_always(from <= array->length);
     mtb_assert_always(n > 0);
 
+    u64 capacity = array->capacity;
     u64 minCapacity = mtb_mul_u64(mtb_add_u64(array->length, n), array->itemSize);
-    if (array->capacity < minCapacity) {
-        u64 capacity = array->capacity == 0 ? mtb_mul_u64(MTB_DYNARR_INIT_COUNT, array->itemSize) : array->capacity;
-        while (capacity < minCapacity) {
-            capacity = mtb_mul_u64(capacity, 2);
-        }
-        mtb_dynarr_grow(array, capacity);
+    if (capacity < minCapacity) {
+        capacity += capacity >> 1;
+        mtb_dynarr_grow(array, mtb_max_u64(capacity, minCapacity));
     }
 
     u8 *beg = array->items + from * array->itemSize;
@@ -170,22 +168,21 @@ test_mtb_dynarr_grow(MtbArena arena)
     assert(array.itemSize == sizeof(u16));
 
     u64 count = 10;
-    u64 initCapacity = count * array.itemSize;
-    mtb_dynarr_grow(&array, initCapacity);
+    mtb_dynarr_grow(&array, count * array.itemSize);
     assert(mtb_dynarr_is_empty(&array));
-    assert(array.capacity == initCapacity);
+    assert(array.capacity == count * array.itemSize);
     assert(array.length == 0);
 
     mtb_dynarr_insert_n(&array, 0, count);
-    assert(array.capacity == initCapacity);
+    assert(array.capacity == count * array.itemSize);
     assert(array.length == count);
 
     mtb_dynarr_insert(&array, array.length);
-    assert(array.capacity == initCapacity * MTB_DYNARR_GROWTH_FACTOR);
+    assert(array.capacity >= (count + 1) * array.itemSize);
     assert(array.length == count + 1);
 
     mtb_dynarr_clear(&array);
-    assert(array.capacity == initCapacity * MTB_DYNARR_GROWTH_FACTOR);
+    assert(array.capacity >= (count + 1) * array.itemSize);
     assert(mtb_dynarr_is_empty(&array));
 }
 
@@ -237,7 +234,7 @@ intern void
 test_mtb_dynarr(void)
 {
     MtbArena arena = {0};
-    mtb_arena_init(&arena, 100, &MTB_ARENA_DEF_ALLOCATOR);
+    mtb_arena_init(&arena, kb(1), &MTB_ARENA_DEF_ALLOCATOR);
 
     test_mtb_dynarr_insert(arena);
     test_mtb_dynarr_remove(arena);
