@@ -3,6 +3,7 @@
 #define MTB_LIST_TESTS
 #define MTB_ARENA_TESTS
 #define MTB_DYNARR_TESTS
+#define MTB_STRING_TESTS
 #include "mtb_all.h"
 
 
@@ -14,4 +15,5 @@ main(void)
     test_mtb_list();
     test_mtb_arena();
     test_mtb_dynarr();
+    test_mtb_string();
 }

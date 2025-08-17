@@ -20,6 +20,7 @@ struct mtb_list_node
 #define mtb_list_foreach(h, i) _mtb_list_foreach(h, i, mtb_id(_h))
 
 public void mtb_list_init(MtbListNode *head);
+#define mtb_list_reset(h) mtb_list_init(h)
 public bool mtb_list_is_empty(MtbListNode *head);
 public MtbListNode *mtb_list_remove(MtbListNode *item);
 public MtbListNode *mtb_list_insert_before(MtbListNode *pivot, MtbListNode *item);

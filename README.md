@@ -1,4 +1,4 @@
-# MyToolBox
+# MyToolBox (MTB)
 
 This is a collection of reusable C utils.
 
@@ -17,6 +17,7 @@ This is a collection of reusable C utils.
 - [mtb_list.h](./mtb_list.h) - doubly linked list.
 - [mtb_arena.h](./mtb_arena.h) - arena allocator.
 - [mtb_dynarr.h](./mtb_dynarr.h) - dynamically growing array (aka vector).
+- [mtb_string.h](./mtb_string.h) - strings with partial UTF-8 support.
 - [tests.h](./tests.c) - runs all unit tests.
 
 

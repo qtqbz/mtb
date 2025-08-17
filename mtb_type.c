@@ -1,6 +1,73 @@
 #include "mtb_type.h"
 
 
+public bool
+mtb_char_is_lower(char c)
+{
+    return 'a' <= c && c <= 'z';
+}
+
+public bool
+mtb_char_is_upper(char c)
+{
+    return 'A' <= c && c <= 'Z';
+}
+
+public bool
+mtb_char_is_alpha(char c)
+{
+    return mtb_char_is_lower(c) || mtb_char_is_upper(c);
+}
+
+public bool
+mtb_char_is_digit(char c)
+{
+    return '0' <= c && c <= '9';
+}
+
+public bool
+mtb_char_is_xdigit(char c)
+{
+    return mtb_char_is_digit(c) || ('A' <= c && c <= 'F') || ('a' <= c && c <= 'f');
+}
+
+public bool
+mtb_char_is_alnum(char c)
+{
+    return mtb_char_is_alpha(c) || mtb_char_is_digit(c);
+}
+
+public bool
+mtb_char_is_space(char c)
+{
+    switch(c) {
+        case ' ':
+        case '\t':
+        case '\r':
+        case '\n':
+        case '\v':
+        case '\f': {
+            return true;
+        }
+        default: {
+            return false;
+        }
+    }
+}
+
+public char
+mtb_char_to_lower(char c)
+{
+    return mtb_char_is_upper(c) ? c + ('a' - 'A') : c;
+}
+
+public char
+mtb_char_to_upper(char c)
+{
+    return mtb_char_is_lower(c) ? c + ('A' - 'a') : c;
+}
+
+
 #ifdef MTB_TYPE_TESTS
 
 #include <assert.h>
@@ -138,6 +205,12 @@ test_mtb_cast(void)
 
     assert(mtb_cast_u64_i64(0) == 0);
     assert(mtb_cast_u64_i64(I64_MAX) == I64_MAX);
+
+    assert(mtb_cast_char_u8(0) == 0);
+    assert(mtb_cast_char_u8(CHAR_MAX) == CHAR_MAX);
+
+    assert(mtb_cast_u8_char(0) == 0);
+    assert(mtb_cast_u8_char(CHAR_MAX) == CHAR_MAX);
 }
 
 intern void

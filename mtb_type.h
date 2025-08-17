@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <limits.h>
 
 #include "mtb_macro.h"
 
@@ -39,8 +40,6 @@ global u8  U8_MAX  = UINT8_MAX;
 global u16 U16_MAX = UINT16_MAX;
 global u32 U32_MAX = UINT32_MAX;
 global u64 U64_MAX = UINT64_MAX;
-
-global u64 U64_MAXM = UINT64_MAX;
 
 
 /* Safe Comparisons */
@@ -179,5 +178,22 @@ global u64 U64_MAXM = UINT64_MAX;
 #define mtb_cast_u16_i16(a) _mtb_cast_max(a, u16, i16, (u16)I16_MAX, mtb_id(_a))
 #define mtb_cast_u32_i32(a) _mtb_cast_max(a, u32, i32, (u32)I32_MAX, mtb_id(_a))
 #define mtb_cast_u64_i64(a) _mtb_cast_max(a, u64, i64, (u64)I64_MAX, mtb_id(_a))
+
+
+/* Char Operations */
+
+#define mtb_cast_char_u8(a) _mtb_cast_min(a, char, u8,   0,             mtb_id(_a))
+#define mtb_cast_u8_char(a) _mtb_cast_max(a, u8,   char, (u8)CHAR_MAX , mtb_id(_a))
+
+public bool mtb_char_is_lower(char c);
+public bool mtb_char_is_upper(char c);
+public bool mtb_char_is_alpha(char c);
+public bool mtb_char_is_alnum(char c);
+public bool mtb_char_is_space(char c);
+public bool mtb_char_is_digit(char c);
+public bool mtb_char_is_xdigit(char c);
+
+public char mtb_char_to_lower(char c);
+public char mtb_char_to_upper(char c);
 
 #endif // MTB_TYPE_H
