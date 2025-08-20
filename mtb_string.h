@@ -41,19 +41,23 @@ public i32 _mtb_str_cmp(MtbStr a, MtbStr b, bool insensitive);
 #define mtb_str_is_equal_i(a, b) (mtb_str_cmp_i(a, b) == 0)
 
 #define MTB_STR_NOT_FOUND U64_MAX
-public u64 _mtb_str_find(MtbStr a, MtbStr b, bool insensitive);
-#define mtb_str_find(a, b) _mtb_str_find(a, b, false)
-#define mtb_str_find_i(a, b) _mtb_str_find(a, b, true)
-#define mtb_str_contains(a, b) ((bool)(mtb_str_find(a, b, false) != MTB_STR_NOT_FOUND))
-#define mtb_str_contains_i(a, b) ((bool)(mtb_str_find(a, b, true) != MTB_STR_NOT_FOUND))
+public u64 _mtb_str_find(MtbStr str, MtbStr pattern, bool insensitive);
+#define mtb_str_find(s, p) _mtb_str_find(s, p, false)
+#define mtb_str_find_i(s, p) _mtb_str_find(s, p, true)
+#define mtb_str_contains(s, p) ((bool)(mtb_str_find(s, p) != MTB_STR_NOT_FOUND))
+#define mtb_str_contains_i(s, p) ((bool)(mtb_str_find_i(s, p) != MTB_STR_NOT_FOUND))
 
-public MtbStr mtb_str_trim_start(MtbStr s, char *chars);
-#define mtb_str_trim_start_space(s) mtb_str_trim_start(s, " \t\r\n\v\f")
-public MtbStr mtb_str_trim_end(MtbStr s, char *chars);
-#define mtb_str_trim_end_space(s) mtb_str_trim_end(s, " \t\r\n\v\f")
-public MtbStr mtb_str_trim(MtbStr s, char *chars);
-#define mtb_str_trim_space(s) mtb_str_trim(s, " \t\r\n\v\f")
+public bool _mtb_str_has_prefix(MtbStr str, MtbStr pfx, bool insensitive);
+#define mtb_str_has_prefix(s, p) _mtb_str_has_prefix(s, p, false)
+#define mtb_str_has_prefix_i(s, p) _mtb_str_has_prefix(s, p, true)
 
+public bool _mtb_str_has_suffix(MtbStr str, MtbStr sfx, bool insensitive);
+#define mtb_str_has_suffix(s, x) _mtb_str_has_suffix(s, x, false)
+#define mtb_str_has_suffix_i(s, x) _mtb_str_has_suffix(s, x, true)
+
+public MtbStr mtb_str_trim(MtbStr str);
+public MtbStr mtb_str_to_lower(MtbArena *arena, MtbStr str);
+public MtbStr mtb_str_to_upper(MtbArena *arena, MtbStr str);
 public MtbStr mtb_str_dup(MtbArena *arena, MtbStr str);
 public MtbStr mtb_str_cat(MtbArena *arena, MtbStr a, MtbStr b);
 public MtbStr mtb_str_substr(MtbStr str, u64 start, u64 end);

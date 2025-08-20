@@ -71,10 +71,104 @@ _mtb_str_cmp(MtbStr a, MtbStr b, bool insensitive)
     return a.length == b.length ? 0 : a.length > b.length ? 1 : -1;
 }
 
+public u64
+_mtb_str_find(MtbStr str, MtbStr pattern, bool insensitive)
+{
+    if (str.length >= pattern.length) {
+        u64 i, iEnd = str.length - pattern.length + 1;
+        u64 j, jEnd = pattern.length;
+        if (insensitive) {
+            for (i = 0; i < iEnd; i++) {
+                for (j = 0; j < jEnd; j++) {
+                    if (mtb_char_to_lower(str.chars[i + j]) != mtb_char_to_lower(pattern.chars[j])) {
+                        break;
+                    }
+                }
+                if (j == jEnd) {
+                    return i;
+                }
+            }
+        }
+        else {
+            for (i = 0; i < iEnd; i++) {
+                for (j = 0; j < jEnd; j++) {
+                    if (str.chars[i + j] != pattern.chars[j]) {
+                        break;
+                    }
+                }
+                if (j == jEnd) {
+                    return i;
+                }
+            }
+        }
+    }
+    return MTB_STR_NOT_FOUND;
+}
+
+public bool
+_mtb_str_has_prefix(MtbStr str, MtbStr pfx, bool insensitive)
+{
+    if (str.length < pfx.length) {
+        return false;
+    }
+    return insensitive ? mtb_str_is_equal_i(pfx, mtb_str_substr(str, 0, pfx.length))
+                       : mtb_str_is_equal(pfx, mtb_str_substr(str, 0, pfx.length));
+}
+
+public bool
+_mtb_str_has_suffix(MtbStr str, MtbStr sfx, bool insensitive)
+{
+    if (str.length < sfx.length) {
+        return false;
+    }
+    return insensitive ? mtb_str_is_equal_i(sfx, mtb_str_substr(str, str.length - sfx.length, str.length))
+                       : mtb_str_is_equal(sfx, mtb_str_substr(str, str.length - sfx.length, str.length));
+}
+
+public MtbStr
+mtb_str_trim(MtbStr str)
+{
+    u64 beg = 0;
+    while (beg < str.length && mtb_char_is_space(str.chars[beg])) {
+        beg++;
+    }
+    u64 end = str.length;
+    while (beg < end && mtb_char_is_space(str.chars[end - 1])) {
+        end--;
+    }
+    return mtb_str_substr(str, beg, end);
+}
+
+public MtbStr
+mtb_str_to_lower(MtbArena *arena, MtbStr str)
+{
+    if (mtb_str_is_empty(str)) {
+        return mtb_str_empty();
+    }
+    char *chars = mtb_arena_bump(arena, char, str.length);
+    for (u64 i = 0; i < str.length; i++) {
+        chars[i] = mtb_char_to_lower(str.chars[i]);
+    }
+    return mtb_str((u8 *)chars, str.length);
+}
+
+public MtbStr
+mtb_str_to_upper(MtbArena *arena, MtbStr str)
+{
+    if (mtb_str_is_empty(str)) {
+        return mtb_str_empty();
+    }
+    char *chars = mtb_arena_bump(arena, char, str.length);
+    for (u64 i = 0; i < str.length; i++) {
+        chars[i] = mtb_char_to_upper(str.chars[i]);
+    }
+    return mtb_str((u8 *)chars, str.length);
+}
+
 public MtbStr
 mtb_str_dup(MtbArena *arena, MtbStr str)
 {
-    if (str.length == 0) {
+    if (mtb_str_is_empty(str)) {
         return mtb_str_empty();
     }
     u8 *bytes = mtb_arena_bump(arena, u8, str.length);
@@ -98,8 +192,8 @@ mtb_str_cat(MtbArena *arena, MtbStr a, MtbStr b)
 public MtbStr
 mtb_str_substr(MtbStr str, u64 start, u64 end)
 {
-    mtb_assert_always(start < end && end <= str.length);
-    return mtb_str(str.bytes + start, end - start);
+    mtb_assert_always(start <= end && end <= str.length);
+    return start == end ? mtb_str_empty() : mtb_str(str.bytes + start, end - start);
 }
 
 public void
@@ -231,6 +325,86 @@ test_mtb_str_cmp(void)
 }
 
 intern void
+test_mtb_str_find(void)
+{
+    assert(mtb_str_find(mtb_str_lit("ABCDEFGHIJKLMNOPQRSTUVWXYZ"), mtb_str_empty()) == 0);
+    assert(mtb_str_find(mtb_str_empty(), mtb_str_lit("ABCDEFGHIJKLMNOPQRSTUVWXYZ")) == MTB_STR_NOT_FOUND);
+    assert(mtb_str_find(mtb_str_lit("ABCDEFGHIJKLMNOPQRSTUVWXYZ"), mtb_str_lit("ABCDEFGHIJKLMNOPQRSTUVWXYZ")) == 0);
+    assert(mtb_str_find(mtb_str_lit("ABCDEFGHIJKLMNOPQRSTUVWXYZ"), mtb_str_lit("A")) == 0);
+    assert(mtb_str_find(mtb_str_lit("ABCDEFGHIJKLMNOPQRSTUVWXYZ"), mtb_str_lit("MNOPQRS")) == 12);
+    assert(mtb_str_find(mtb_str_lit("ABCDEFGHIJKLMNOPQRSTUVWXYZ"), mtb_str_lit("Z")) == 25);
+    assert(mtb_str_find(mtb_str_lit("ABCDEFGHIJKLMNOPQRSTUVWXYZ"), mtb_str_lit("z")) == MTB_STR_NOT_FOUND);
+    assert(mtb_str_contains(mtb_str_lit("It's a Me, Mario!"), mtb_str_lit("Mario")));
+    assert(!mtb_str_contains(mtb_str_lit("It's a Me, Mario!"), mtb_str_lit("Wario")));
+
+    assert(mtb_str_find_i(mtb_str_lit("AbCdEfGhIjKlMnOpQrStUvWxYz"), mtb_str_empty()) == 0);
+    assert(mtb_str_find_i(mtb_str_empty(), mtb_str_lit("AbCdEfGhIjKlMnOpQrStUvWxYz")) == MTB_STR_NOT_FOUND);
+    assert(mtb_str_find_i(mtb_str_lit("AbCdEfGhIjKlMnOpQrStUvWxYz"), mtb_str_lit("aBcDeFgHiJkLmNoPqRsTuVwXyZ")) == 0);
+    assert(mtb_str_find_i(mtb_str_lit("AbCdEfGhIjKlMnOpQrStUvWxYz"), mtb_str_lit("a")) == 0);
+    assert(mtb_str_find_i(mtb_str_lit("AbCdEfGhIjKlMnOpQrStUvWxYz"), mtb_str_lit("mNoPqRs")) == 12);
+    assert(mtb_str_find_i(mtb_str_lit("AbCdEfGhIjKlMnOpQrStUvWxYz"), mtb_str_lit("Z")) == 25);
+    assert(mtb_str_find_i(mtb_str_lit("AbCdEfGhIjKlMnOpQrStUvWxYz"), mtb_str_lit("1")) == MTB_STR_NOT_FOUND);
+    assert(mtb_str_contains_i(mtb_str_lit("It's a Me, Mario!"), mtb_str_lit("mario")));
+    assert(!mtb_str_contains_i(mtb_str_lit("It's a Me, Mario!"), mtb_str_lit("wario")));
+}
+
+intern void
+test_mtb_str_has_prefix(void)
+{
+    assert(mtb_str_has_prefix(mtb_str_lit("Hello, World!"), mtb_str_empty()));
+    assert(!mtb_str_has_prefix(mtb_str_empty(), mtb_str_lit("Hello, World!")));
+    assert(mtb_str_has_prefix(mtb_str_lit("Hello, World!"), mtb_str_lit("Hello")));
+    assert(!mtb_str_has_prefix(mtb_str_lit("Hello, World!"), mtb_str_lit("World!")));
+    assert(mtb_str_has_prefix(mtb_str_lit("Hello, World!"), mtb_str_lit("Hello, World!")));
+
+    assert(mtb_str_has_prefix_i(mtb_str_lit("Hello, World!"), mtb_str_empty()));
+    assert(!mtb_str_has_prefix_i(mtb_str_empty(), mtb_str_lit("Hello, World!")));
+    assert(mtb_str_has_prefix_i(mtb_str_lit("Hello, World!"), mtb_str_lit("hello")));
+    assert(!mtb_str_has_prefix_i(mtb_str_lit("Hello, World!"), mtb_str_lit("world!")));
+    assert(mtb_str_has_prefix_i(mtb_str_lit("Hello, World!"), mtb_str_lit("hello, world!")));
+}
+
+intern void
+test_mtb_str_has_suffix(void)
+{
+    assert(mtb_str_has_suffix(mtb_str_lit("Hello, World!"), mtb_str_empty()));
+    assert(!mtb_str_has_suffix(mtb_str_empty(), mtb_str_lit("Hello, World!")));
+    assert(mtb_str_has_suffix(mtb_str_lit("Hello, World!"), mtb_str_lit("World!")));
+    assert(!mtb_str_has_suffix(mtb_str_lit("Hello, World!"), mtb_str_lit("Hello")));
+    assert(mtb_str_has_suffix(mtb_str_lit("Hello, World!"), mtb_str_lit("Hello, World!")));
+
+    assert(mtb_str_has_suffix_i(mtb_str_lit("Hello, World!"), mtb_str_empty()));
+    assert(!mtb_str_has_suffix_i(mtb_str_empty(), mtb_str_lit("Hello, World!")));
+    assert(mtb_str_has_suffix_i(mtb_str_lit("Hello, World!"), mtb_str_lit("world!")));
+    assert(!mtb_str_has_suffix_i(mtb_str_lit("Hello, World!"), mtb_str_lit("hello")));
+    assert(mtb_str_has_suffix_i(mtb_str_lit("Hello, World!"), mtb_str_lit("hello, world!")));
+}
+
+intern void
+test_mtb_str_trim(void)
+{
+    assert(mtb_str_is_equal(mtb_str_trim(mtb_str_empty()), mtb_str_empty()));
+    assert(mtb_str_is_equal(mtb_str_trim(mtb_str_lit(" \t\r\n\v\f")), mtb_str_empty()));
+    assert(mtb_str_is_equal(mtb_str_trim(mtb_str_lit("Hello! \t\r\n\v\f")), mtb_str_lit("Hello!")));
+    assert(mtb_str_is_equal(mtb_str_trim(mtb_str_lit(" \t\r\n\v\fHello!")), mtb_str_lit("Hello!")));
+    assert(mtb_str_is_equal(mtb_str_trim(mtb_str_lit(" \t\r\n\v\fHello! \t\r\n\v\f")), mtb_str_lit("Hello!")));
+}
+
+intern void
+test_mtb_str_to_lower(MtbArena arena)
+{
+    assert(mtb_str_is_equal(mtb_str_to_lower(&arena, mtb_str_empty()), mtb_str_empty()));
+    assert(mtb_str_is_equal(mtb_str_to_lower(&arena, mtb_str_lit("Hello, World!")), mtb_str_lit("hello, world!")));
+}
+
+intern void
+test_mtb_str_to_upper(MtbArena arena)
+{
+    assert(mtb_str_is_equal(mtb_str_to_upper(&arena, mtb_str_empty()), mtb_str_empty()));
+    assert(mtb_str_is_equal(mtb_str_to_upper(&arena, mtb_str_lit("Hello, World!")), mtb_str_lit("HELLO, WORLD!")));
+}
+
+intern void
 test_mtb_str_dup(MtbArena arena)
 {
     MtbStr o1 = mtb_str_empty();
@@ -271,6 +445,8 @@ test_mtb_str_substr(void)
     assert(mtb_str_is_equal(mtb_str_substr(s, 0, s.length), mtb_str_lit("Hello, World!")));
     assert(mtb_str_is_equal(mtb_str_substr(s, 0, 5), mtb_str_lit("Hello")));
     assert(mtb_str_is_equal(mtb_str_substr(s, 7, s.length), mtb_str_lit("World!")));
+    assert(mtb_str_is_equal(mtb_str_substr(s, 0, 0), mtb_str_empty()));
+    assert(mtb_str_is_equal(mtb_str_substr(s, s.length, s.length), mtb_str_empty()));
 }
 
 intern void
@@ -331,6 +507,12 @@ test_mtb_string(void)
     test_mtb_str_cstr(arena);
     test_mtb_str_sprintf(arena);
     test_mtb_str_cmp();
+    test_mtb_str_find();
+    test_mtb_str_has_prefix();
+    test_mtb_str_has_suffix();
+    test_mtb_str_trim();
+    test_mtb_str_to_lower(arena);
+    test_mtb_str_to_upper(arena);
     test_mtb_str_dup(arena);
     test_mtb_str_cat(arena);
     test_mtb_str_substr();
