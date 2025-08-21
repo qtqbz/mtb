@@ -49,11 +49,11 @@ mtb_str_sprintf(MtbArena *arena, char *fmt, ...)
 }
 
 public i32
-_mtb_str_cmp(MtbStr a, MtbStr b, bool insensitive)
+mtb_str_cmp_opt(MtbStr a, MtbStr b, MtbStrCmpOptions opt)
 {
     // TODO intrinsify
     u64 minLength = mtb_min_u64(a.length, b.length);
-    if (insensitive) {
+    if (opt.ignoreCase) {
         for (u64 i = 0; i < minLength; i++) {
             char ca = mtb_char_to_lower(a.chars[i]);
             char cb = mtb_char_to_lower(b.chars[i]);
@@ -72,12 +72,12 @@ _mtb_str_cmp(MtbStr a, MtbStr b, bool insensitive)
 }
 
 public u64
-_mtb_str_find(MtbStr str, MtbStr pattern, bool insensitive)
+mtb_str_find_opt(MtbStr str, MtbStr pattern, MtbStrCmpOptions opt)
 {
     if (str.length >= pattern.length) {
         u64 i, iEnd = str.length - pattern.length + 1;
         u64 j, jEnd = pattern.length;
-        if (insensitive) {
+        if (opt.ignoreCase) {
             for (i = 0; i < iEnd; i++) {
                 for (j = 0; j < jEnd; j++) {
                     if (mtb_char_to_lower(str.chars[i + j]) != mtb_char_to_lower(pattern.chars[j])) {
@@ -106,23 +106,23 @@ _mtb_str_find(MtbStr str, MtbStr pattern, bool insensitive)
 }
 
 public bool
-_mtb_str_has_prefix(MtbStr str, MtbStr pfx, bool insensitive)
+mtb_str_has_prefix_opt(MtbStr str, MtbStr pfx, MtbStrCmpOptions opt)
 {
     if (str.length < pfx.length) {
         return false;
     }
-    return insensitive ? mtb_str_is_equal_i(pfx, mtb_str_substr(str, 0, pfx.length))
-                       : mtb_str_is_equal(pfx, mtb_str_substr(str, 0, pfx.length));
+    MtbStr substr = mtb_str_substr(str, 0, pfx.length);
+    return mtb_str_is_equal(pfx, substr, .ignoreCase = opt.ignoreCase);
 }
 
 public bool
-_mtb_str_has_suffix(MtbStr str, MtbStr sfx, bool insensitive)
+mtb_str_has_suffix_opt(MtbStr str, MtbStr sfx, MtbStrCmpOptions opt)
 {
     if (str.length < sfx.length) {
         return false;
     }
-    return insensitive ? mtb_str_is_equal_i(sfx, mtb_str_substr(str, str.length - sfx.length, str.length))
-                       : mtb_str_is_equal(sfx, mtb_str_substr(str, str.length - sfx.length, str.length));
+    MtbStr substr = mtb_str_substr(str, str.length - sfx.length, str.length);
+    return mtb_str_is_equal(sfx, substr, .ignoreCase = opt.ignoreCase);
 }
 
 public MtbStr
@@ -314,14 +314,14 @@ test_mtb_str_cmp(void)
     assert(mtb_str_cmp(mtb_str_lit("abcde"), mtb_str_lit("abcd")) > 0);
     assert(mtb_str_cmp(mtb_str_lit("abcd"), mtb_str_lit("abcde")) < 0);
 
-    assert(mtb_str_is_equal_i(mtb_str_empty(), mtb_str_empty()));
-    assert(mtb_str_cmp_i(mtb_str_lit("AbCd"), mtb_str_empty()) > 0);
-    assert(mtb_str_cmp_i(mtb_str_empty(), mtb_str_lit("aBcD")) < 0);
-    assert(mtb_str_is_equal_i(mtb_str_lit("AbCd"), mtb_str_lit("aBcD")));
-    assert(mtb_str_cmp_i(mtb_str_lit("AbCe"), mtb_str_lit("aBcD")) > 0);
-    assert(mtb_str_cmp_i(mtb_str_lit("AbCd"), mtb_str_lit("aBcE")) < 0);
-    assert(mtb_str_cmp_i(mtb_str_lit("AbCdE"), mtb_str_lit("aBcD")) > 0);
-    assert(mtb_str_cmp_i(mtb_str_lit("AbCd"), mtb_str_lit("aBcDe")) < 0);
+    assert(mtb_str_is_equal(mtb_str_empty(), mtb_str_empty(), .ignoreCase = true));
+    assert(mtb_str_cmp(mtb_str_lit("AbCd"), mtb_str_empty(), .ignoreCase = true) > 0);
+    assert(mtb_str_cmp(mtb_str_empty(), mtb_str_lit("aBcD"), .ignoreCase = true) < 0);
+    assert(mtb_str_is_equal(mtb_str_lit("AbCd"), mtb_str_lit("aBcD"), .ignoreCase = true));
+    assert(mtb_str_cmp(mtb_str_lit("AbCe"), mtb_str_lit("aBcD"), .ignoreCase = true) > 0);
+    assert(mtb_str_cmp(mtb_str_lit("AbCd"), mtb_str_lit("aBcE"), .ignoreCase = true) < 0);
+    assert(mtb_str_cmp(mtb_str_lit("AbCdE"), mtb_str_lit("aBcD"), .ignoreCase = true) > 0);
+    assert(mtb_str_cmp(mtb_str_lit("AbCd"), mtb_str_lit("aBcDe"), .ignoreCase = true) < 0);
 }
 
 intern void
@@ -337,15 +337,15 @@ test_mtb_str_find(void)
     assert(mtb_str_contains(mtb_str_lit("It's a Me, Mario!"), mtb_str_lit("Mario")));
     assert(!mtb_str_contains(mtb_str_lit("It's a Me, Mario!"), mtb_str_lit("Wario")));
 
-    assert(mtb_str_find_i(mtb_str_lit("AbCdEfGhIjKlMnOpQrStUvWxYz"), mtb_str_empty()) == 0);
-    assert(mtb_str_find_i(mtb_str_empty(), mtb_str_lit("AbCdEfGhIjKlMnOpQrStUvWxYz")) == MTB_STR_NOT_FOUND);
-    assert(mtb_str_find_i(mtb_str_lit("AbCdEfGhIjKlMnOpQrStUvWxYz"), mtb_str_lit("aBcDeFgHiJkLmNoPqRsTuVwXyZ")) == 0);
-    assert(mtb_str_find_i(mtb_str_lit("AbCdEfGhIjKlMnOpQrStUvWxYz"), mtb_str_lit("a")) == 0);
-    assert(mtb_str_find_i(mtb_str_lit("AbCdEfGhIjKlMnOpQrStUvWxYz"), mtb_str_lit("mNoPqRs")) == 12);
-    assert(mtb_str_find_i(mtb_str_lit("AbCdEfGhIjKlMnOpQrStUvWxYz"), mtb_str_lit("Z")) == 25);
-    assert(mtb_str_find_i(mtb_str_lit("AbCdEfGhIjKlMnOpQrStUvWxYz"), mtb_str_lit("1")) == MTB_STR_NOT_FOUND);
-    assert(mtb_str_contains_i(mtb_str_lit("It's a Me, Mario!"), mtb_str_lit("mario")));
-    assert(!mtb_str_contains_i(mtb_str_lit("It's a Me, Mario!"), mtb_str_lit("wario")));
+    assert(mtb_str_find(mtb_str_lit("AbCdEfGhIjKlMnOpQrStUvWxYz"), mtb_str_empty(), .ignoreCase = true) == 0);
+    assert(mtb_str_find(mtb_str_empty(), mtb_str_lit("AbCdEfGhIjKlMnOpQrStUvWxYz"), .ignoreCase = true) == MTB_STR_NOT_FOUND);
+    assert(mtb_str_find(mtb_str_lit("AbCdEfGhIjKlMnOpQrStUvWxYz"), mtb_str_lit("aBcDeFgHiJkLmNoPqRsTuVwXyZ"), .ignoreCase = true) == 0);
+    assert(mtb_str_find(mtb_str_lit("AbCdEfGhIjKlMnOpQrStUvWxYz"), mtb_str_lit("a"), .ignoreCase = true) == 0);
+    assert(mtb_str_find(mtb_str_lit("AbCdEfGhIjKlMnOpQrStUvWxYz"), mtb_str_lit("mNoPqRs"), .ignoreCase = true) == 12);
+    assert(mtb_str_find(mtb_str_lit("AbCdEfGhIjKlMnOpQrStUvWxYz"), mtb_str_lit("Z"), .ignoreCase = true) == 25);
+    assert(mtb_str_find(mtb_str_lit("AbCdEfGhIjKlMnOpQrStUvWxYz"), mtb_str_lit("1"), .ignoreCase = true) == MTB_STR_NOT_FOUND);
+    assert(mtb_str_contains(mtb_str_lit("It's a Me, Mario!"), mtb_str_lit("mario"), .ignoreCase = true));
+    assert(!mtb_str_contains(mtb_str_lit("It's a Me, Mario!"), mtb_str_lit("wario"), .ignoreCase = true));
 }
 
 intern void
@@ -357,11 +357,11 @@ test_mtb_str_has_prefix(void)
     assert(!mtb_str_has_prefix(mtb_str_lit("Hello, World!"), mtb_str_lit("World!")));
     assert(mtb_str_has_prefix(mtb_str_lit("Hello, World!"), mtb_str_lit("Hello, World!")));
 
-    assert(mtb_str_has_prefix_i(mtb_str_lit("Hello, World!"), mtb_str_empty()));
-    assert(!mtb_str_has_prefix_i(mtb_str_empty(), mtb_str_lit("Hello, World!")));
-    assert(mtb_str_has_prefix_i(mtb_str_lit("Hello, World!"), mtb_str_lit("hello")));
-    assert(!mtb_str_has_prefix_i(mtb_str_lit("Hello, World!"), mtb_str_lit("world!")));
-    assert(mtb_str_has_prefix_i(mtb_str_lit("Hello, World!"), mtb_str_lit("hello, world!")));
+    assert(mtb_str_has_prefix(mtb_str_lit("Hello, World!"), mtb_str_empty(), .ignoreCase = true));
+    assert(!mtb_str_has_prefix(mtb_str_empty(), mtb_str_lit("Hello, World!"), .ignoreCase = true));
+    assert(mtb_str_has_prefix(mtb_str_lit("Hello, World!"), mtb_str_lit("hello"), .ignoreCase = true));
+    assert(!mtb_str_has_prefix(mtb_str_lit("Hello, World!"), mtb_str_lit("world!"), .ignoreCase = true));
+    assert(mtb_str_has_prefix(mtb_str_lit("Hello, World!"), mtb_str_lit("hello, world!"), .ignoreCase = true));
 }
 
 intern void
@@ -373,11 +373,11 @@ test_mtb_str_has_suffix(void)
     assert(!mtb_str_has_suffix(mtb_str_lit("Hello, World!"), mtb_str_lit("Hello")));
     assert(mtb_str_has_suffix(mtb_str_lit("Hello, World!"), mtb_str_lit("Hello, World!")));
 
-    assert(mtb_str_has_suffix_i(mtb_str_lit("Hello, World!"), mtb_str_empty()));
-    assert(!mtb_str_has_suffix_i(mtb_str_empty(), mtb_str_lit("Hello, World!")));
-    assert(mtb_str_has_suffix_i(mtb_str_lit("Hello, World!"), mtb_str_lit("world!")));
-    assert(!mtb_str_has_suffix_i(mtb_str_lit("Hello, World!"), mtb_str_lit("hello")));
-    assert(mtb_str_has_suffix_i(mtb_str_lit("Hello, World!"), mtb_str_lit("hello, world!")));
+    assert(mtb_str_has_suffix(mtb_str_lit("Hello, World!"), mtb_str_empty(), .ignoreCase = true));
+    assert(!mtb_str_has_suffix(mtb_str_empty(), mtb_str_lit("Hello, World!"), .ignoreCase = true));
+    assert(mtb_str_has_suffix(mtb_str_lit("Hello, World!"), mtb_str_lit("world!"), .ignoreCase = true));
+    assert(!mtb_str_has_suffix(mtb_str_lit("Hello, World!"), mtb_str_lit("hello"), .ignoreCase = true));
+    assert(mtb_str_has_suffix(mtb_str_lit("Hello, World!"), mtb_str_lit("hello, world!"), .ignoreCase = true));
 }
 
 intern void

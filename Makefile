@@ -11,6 +11,7 @@ COMMON_CFLAGS := -DMTB_DEBUG \
                  -Wno-unused-parameter \
                  -Wno-unused-function \
                  -Wno-sign-conversion \
+                 -Wno-override-init \
 
 SHELL := /bin/bash
 

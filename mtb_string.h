@@ -11,6 +11,8 @@
 
 /* String */
 
+#define MTB_STR_NOT_FOUND U64_MAX
+
 typedef struct mtb_str MtbStr;
 struct mtb_str
 {
@@ -19,6 +21,12 @@ struct mtb_str
         char *chars; // not null-terminated!
     };
     u64 length; // in bytes
+};
+
+typedef struct mtb_str_cmp_options MtbStrCmpOptions;
+struct mtb_str_cmp_options
+{
+    bool ignoreCase;
 };
 
 #define mtb_str_varg(s) (s).length, (s).chars
@@ -34,26 +42,19 @@ public char *mtb_str_to_cstr(MtbArena *arena, MtbStr str);
 public MtbStr mtb_str_vsprintf(MtbArena *arena, char *fmt, va_list args);
 public MtbStr mtb_str_sprintf(MtbArena *arena, char *fmt, ...);
 
-public i32 _mtb_str_cmp(MtbStr a, MtbStr b, bool insensitive);
-#define mtb_str_cmp(a, b) _mtb_str_cmp(a, b, false)
-#define mtb_str_cmp_i(a, b) _mtb_str_cmp(a, b, true)
-#define mtb_str_is_equal(a, b) (mtb_str_cmp(a, b) == 0)
-#define mtb_str_is_equal_i(a, b) (mtb_str_cmp_i(a, b) == 0)
+public i32 mtb_str_cmp_opt(MtbStr a, MtbStr b, MtbStrCmpOptions opt);
+#define mtb_str_cmp(a, b, ...) mtb_str_cmp_opt(a, b, (MtbStrCmpOptions){ __VA_ARGS__ })
+#define mtb_str_is_equal(a, b, ...) (mtb_str_cmp(a, b, __VA_ARGS__) == 0)
 
-#define MTB_STR_NOT_FOUND U64_MAX
-public u64 _mtb_str_find(MtbStr str, MtbStr pattern, bool insensitive);
-#define mtb_str_find(s, p) _mtb_str_find(s, p, false)
-#define mtb_str_find_i(s, p) _mtb_str_find(s, p, true)
-#define mtb_str_contains(s, p) ((bool)(mtb_str_find(s, p) != MTB_STR_NOT_FOUND))
-#define mtb_str_contains_i(s, p) ((bool)(mtb_str_find_i(s, p) != MTB_STR_NOT_FOUND))
+public u64 mtb_str_find_opt(MtbStr str, MtbStr pattern, MtbStrCmpOptions opt);
+#define mtb_str_find(s, p, ...) mtb_str_find_opt(s, p, (MtbStrCmpOptions){ __VA_ARGS__ })
+#define mtb_str_contains(s, p, ...) ((bool)(mtb_str_find(s, p, __VA_ARGS__) != MTB_STR_NOT_FOUND))
 
-public bool _mtb_str_has_prefix(MtbStr str, MtbStr pfx, bool insensitive);
-#define mtb_str_has_prefix(s, p) _mtb_str_has_prefix(s, p, false)
-#define mtb_str_has_prefix_i(s, p) _mtb_str_has_prefix(s, p, true)
+public bool mtb_str_has_prefix_opt(MtbStr str, MtbStr pfx, MtbStrCmpOptions opt);
+#define mtb_str_has_prefix(s, p, ...) mtb_str_has_prefix_opt(s, p, (MtbStrCmpOptions){ __VA_ARGS__ })
 
-public bool _mtb_str_has_suffix(MtbStr str, MtbStr sfx, bool insensitive);
-#define mtb_str_has_suffix(s, x) _mtb_str_has_suffix(s, x, false)
-#define mtb_str_has_suffix_i(s, x) _mtb_str_has_suffix(s, x, true)
+public bool mtb_str_has_suffix_opt(MtbStr str, MtbStr sfx, MtbStrCmpOptions opt);
+#define mtb_str_has_suffix(s, x, ...) mtb_str_has_suffix_opt(s, x, (MtbStrCmpOptions){ __VA_ARGS__ })
 
 public MtbStr mtb_str_trim(MtbStr str);
 public MtbStr mtb_str_to_lower(MtbArena *arena, MtbStr str);

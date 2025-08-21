@@ -106,24 +106,21 @@ mtb_arena_deinit(MtbArena *arena)
 }
 
 public void *
-mtb_arena_bump_raw(MtbArena *arena, u64 size, u64 align, bool zero)
+mtb_arena_bump_opt(MtbArena *arena, u64 size, MtbArenaBumpOptions opt)
 {
     mtb_assert_always(size > 0);
-    mtb_assert_always(mtb_is_pow2(align));
+    mtb_assert_always(mtb_is_pow2(opt.align));
 
     u64 oldOffset = arena->offset;
-    u64 padding = mtb_align_padding_pow2((u64)(arena->base + oldOffset), align);
+    u64 padding = mtb_align_padding_pow2((u64)(arena->base + oldOffset), opt.align);
     u64 oldOffsetAligned = mtb_add_u64(oldOffset, padding);
     u64 newOffset = mtb_add_u64(oldOffsetAligned, size);
     mtb_assert_always(newOffset <= arena->size);
     arena->offset = newOffset;
 
     u8 *result = arena->base + oldOffsetAligned;
-    if (zero) {
-        return memset(result, 0, size);
-    }
 
-    return result;
+    return opt.no_zero ? result : memset(result, 0, size);
 }
 
 public MtbArenaSavePoint
@@ -168,7 +165,7 @@ test_mtb_allocator(MtbArenaAllocator *allocator)
     assert(*tiny == U64_MAX); // is readable
 
     // page alloc
-    u8 *page = mtb_arena_bump_aligned(&arena, u8, pageSize, pageSize);
+    u8 *page = mtb_arena_bump(&arena, u8, pageSize, .align = pageSize);
     assert(page != 0);
     assert((u64)page % pageSize == 0); // aligned to page boundary
     for (u32 i = 0; i < pageSize; i++) assert(page[i] == 0);      // is zeroed out

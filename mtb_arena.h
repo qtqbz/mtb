@@ -56,18 +56,21 @@ struct mtb_arena_save_point
     u64 offset;
 };
 
+typedef struct mtb_arena_bump_options MtbArenaBumpOptions;
+struct mtb_arena_bump_options
+{
+    u64 align;
+    bool no_zero;
+};
+
 public void mtb_arena_init(MtbArena *arena, u64 size, MtbArenaAllocator *allocator);
 public void mtb_arena_deinit(MtbArena *arena);
 
-public void *mtb_arena_bump_raw(MtbArena *arena, u64 size, u64 align, bool zero);
-#define mtb_arena_bump(a, t, c) \
-    (t *)mtb_arena_bump_raw(a, mtb_mul_u64(sizeof(t), (c)), mtb_max_u64(mtb_alignof(t), MTB_ARENA_DEF_ALIGN), true)
-#define mtb_arena_bump_nozero(a, t, c) \
-    (t *)mtb_arena_bump_raw(a, mtb_mul_u64(sizeof(t), (c)), mtb_max_u64(mtb_alignof(t), MTB_ARENA_DEF_ALIGN), false)
-#define mtb_arena_bump_aligned(a, t, c, l) \
-    (t *)mtb_arena_bump_raw(a, mtb_mul_u64(sizeof(t), (c)), l, true)
-#define mtb_arena_bump_aligned_nozero(a, t, c, l) \
-    (t *)mtb_arena_bump_raw(a, mtb_mul_u64(sizeof(t), (c)), l, false)
+public void *mtb_arena_bump_opt(MtbArena *arena, u64 size, MtbArenaBumpOptions opt);
+#define mtb_arena_bump_raw(a, s, ...) \
+    mtb_arena_bump_opt(a, s, (MtbArenaBumpOptions){ .align = MTB_ARENA_DEF_ALIGN, __VA_ARGS__ })
+#define mtb_arena_bump(a, t, c, ...) \
+    (t *)mtb_arena_bump_raw(a, mtb_mul_u64(sizeof(t), (c)), .align = mtb_alignof(t), __VA_ARGS__)
 
 public MtbArenaSavePoint mtb_arena_save(MtbArena *arena);
 public void mtb_arena_restore(MtbArena *arena, MtbArenaSavePoint *sp);
