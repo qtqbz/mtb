@@ -61,7 +61,7 @@ public MtbStr mtb_str_to_lower(MtbArena *arena, MtbStr str);
 public MtbStr mtb_str_to_upper(MtbArena *arena, MtbStr str);
 public MtbStr mtb_str_dup(MtbArena *arena, MtbStr str);
 public MtbStr mtb_str_cat(MtbArena *arena, MtbStr a, MtbStr b);
-public MtbStr mtb_str_substr(MtbStr str, u64 start, u64 end);
+public MtbStr mtb_str_substr(MtbStr str, u64 beg, u64 end);
 #define mtb_str_is_empty(s) ((bool)((s).length == 0))
 
 

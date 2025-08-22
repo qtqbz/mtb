@@ -136,44 +136,49 @@ mtb_str_trim(MtbStr str)
     while (beg < end && mtb_char_is_space(str.chars[end - 1])) {
         end--;
     }
-    return mtb_str_substr(str, beg, end);
+    str.chars += beg;
+    str.length = end - beg;
+    return str;
 }
 
 public MtbStr
 mtb_str_to_lower(MtbArena *arena, MtbStr str)
 {
     if (mtb_str_is_empty(str)) {
-        return mtb_str_empty();
+        return str;
     }
     char *chars = mtb_arena_bump(arena, char, str.length);
     for (u64 i = 0; i < str.length; i++) {
         chars[i] = mtb_char_to_lower(str.chars[i]);
     }
-    return mtb_str((u8 *)chars, str.length);
+    str.chars = chars;
+    return str;
 }
 
 public MtbStr
 mtb_str_to_upper(MtbArena *arena, MtbStr str)
 {
     if (mtb_str_is_empty(str)) {
-        return mtb_str_empty();
+        return str;
     }
     char *chars = mtb_arena_bump(arena, char, str.length);
     for (u64 i = 0; i < str.length; i++) {
         chars[i] = mtb_char_to_upper(str.chars[i]);
     }
-    return mtb_str((u8 *)chars, str.length);
+    str.chars = chars;
+    return str;
 }
 
 public MtbStr
 mtb_str_dup(MtbArena *arena, MtbStr str)
 {
     if (mtb_str_is_empty(str)) {
-        return mtb_str_empty();
+        return str;
     }
     u8 *bytes = mtb_arena_bump(arena, u8, str.length);
     memcpy(bytes, str.bytes, str.length);
-    return mtb_str(bytes, str.length);
+    str.bytes = bytes;
+    return str;
 }
 
 public MtbStr
@@ -190,10 +195,12 @@ mtb_str_cat(MtbArena *arena, MtbStr a, MtbStr b)
 }
 
 public MtbStr
-mtb_str_substr(MtbStr str, u64 start, u64 end)
+mtb_str_substr(MtbStr str, u64 beg, u64 end)
 {
-    mtb_assert_always(start <= end && end <= str.length);
-    return start == end ? mtb_str_empty() : mtb_str(str.bytes + start, end - start);
+    mtb_assert_always(beg <= end && end <= str.length);
+    str.chars += beg;
+    str.length = end - beg;
+    return str;
 }
 
 public void
@@ -456,14 +463,14 @@ test_mtb_str_builder(MtbArena arena)
     mtb_str_builder_init(&arena, &sb);
 
     char *e1 = "";
-    MtbStr a1 = mtb_str_join_char(&sb, ' ');
+    MtbStr a1 = mtb_str_join(&sb, mtb_str_lit(" "));
     assert(a1.length == strlen(e1));
     assert(strncmp(a1.chars, e1, a1.length) == 0);
     mtb_str_builder_clear(&sb);
 
     char *e2 = "HI";
     mtb_str_builder_prepend(&sb, &mtb_str_lit("HI"));
-    MtbStr a2 = mtb_str_join_char(&sb, ' ');
+    MtbStr a2 = mtb_str_join(&sb, mtb_str_lit(" "));
     assert(a2.length == strlen(e2));
     assert(strncmp(a2.chars, e2, a2.length) == 0);
     mtb_str_builder_clear(&sb);
@@ -474,7 +481,7 @@ test_mtb_str_builder(MtbArena arena)
     mtb_str_builder_prepend(&sb, &mtb_str_lit("HELLO"));
     mtb_str_builder_append(&sb, &mtb_str_lit("WORLD"));
     mtb_str_builder_append(&sb, &mtb_str_lit("!"));
-    MtbStr a3 = mtb_str_join_char(&sb, ' ');
+    MtbStr a3 = mtb_str_join(&sb, mtb_str_lit(" "));
     assert(a3.length == strlen(e3));
     assert(strncmp(a3.chars, e3, a3.length) == 0);
     mtb_str_builder_clear(&sb);
@@ -490,7 +497,7 @@ test_mtb_str_builder(MtbArena arena)
     char *e5 = "100! 0.12345?";
     mtb_str_builder_appendf(&sb, "%.5f?", 0.123451f);
     mtb_str_builder_prependf(&sb, "%d!", 100);
-    MtbStr a5 = mtb_str_join_char(&sb, ' ');
+    MtbStr a5 = mtb_str_join(&sb, mtb_str_lit(" "));
     assert(a5.length == strlen(e5));
     assert(strncmp(a5.chars, e5, a5.length) == 0);
     mtb_str_builder_clear(&sb);
