@@ -29,7 +29,7 @@ struct mtb_str_cmp_options
     bool ignoreCase;
 };
 
-#define mtb_str_varg(s) (s).length, (s).chars
+#define mtb_str_varg(s) (i32)((s).length), ((s).chars)
 
 #define mtb_str(b, l) ((MtbStr){ .bytes = (b), .length = (l) })
 #define mtb_str_char(c) mtb_str((u8[]){ (c) }, 1)
@@ -44,24 +44,44 @@ public MtbStr mtb_str_sprintf(MtbArena *arena, char *fmt, ...);
 
 public i32 mtb_str_cmp_opt(MtbStr a, MtbStr b, MtbStrCmpOptions opt);
 #define mtb_str_cmp(a, b, ...) mtb_str_cmp_opt(a, b, (MtbStrCmpOptions){ __VA_ARGS__ })
+#define mtb_str_cmp_lit(a, b, ...) mtb_str_cmp(a, mtb_str_lit(b), __VA_ARGS__)
+#define mtb_str_cmp_cstr(a, b, ...) mtb_str_cmp(a, mtb_str_from_cstr(b), __VA_ARGS__)
 #define mtb_str_is_equal(a, b, ...) (mtb_str_cmp(a, b, __VA_ARGS__) == 0)
+#define mtb_str_is_equal_lit(a, b, ...) mtb_str_is_equal(a, mtb_str_lit(b), __VA_ARGS__)
+#define mtb_str_is_equal_cstr(a, b, ...) mtb_str_is_equal(a, mtb_str_from_cstr(b), __VA_ARGS__)
 
 public u64 mtb_str_find_opt(MtbStr str, MtbStr pattern, MtbStrCmpOptions opt);
 #define mtb_str_find(s, p, ...) mtb_str_find_opt(s, p, (MtbStrCmpOptions){ __VA_ARGS__ })
+#define mtb_str_find_lit(s, p, ...) mtb_str_find(s, mtb_str_lit(p), __VA_ARGS__)
+#define mtb_str_find_char(s, c, ...) mtb_str_find(s, mtb_str_char(c), __VA_ARGS__)
+#define mtb_str_find_cstr(s, p, ...) mtb_str_find(s, mtb_str_from_cstr(p), __VA_ARGS__)
 #define mtb_str_contains(s, p, ...) ((bool)(mtb_str_find(s, p, __VA_ARGS__) != MTB_STR_NOT_FOUND))
+#define mtb_str_contains_lit(s, p, ...) mtb_str_contains(s, mtb_str_lit(p), __VA_ARGS__)
+#define mtb_str_contains_char(s, c, ...) mtb_str_contains(s, mtb_str_char(c), __VA_ARGS__)
+#define mtb_str_contains_cstr(s, p, ...) mtb_str_contains(s, mtb_str_from_cstr(p), __VA_ARGS__)
 
 public bool mtb_str_has_prefix_opt(MtbStr str, MtbStr pfx, MtbStrCmpOptions opt);
 #define mtb_str_has_prefix(s, p, ...) mtb_str_has_prefix_opt(s, p, (MtbStrCmpOptions){ __VA_ARGS__ })
+#define mtb_str_has_prefix_lit(s, p, ...) mtb_str_has_prefix(s, mtb_str_lit(p), __VA_ARGS__)
+#define mtb_str_has_prefix_cstr(s, p, ...) mtb_str_has_prefix(s, mtb_str_from_cstr(p), __VA_ARGS__)
 
 public bool mtb_str_has_suffix_opt(MtbStr str, MtbStr sfx, MtbStrCmpOptions opt);
 #define mtb_str_has_suffix(s, x, ...) mtb_str_has_suffix_opt(s, x, (MtbStrCmpOptions){ __VA_ARGS__ })
+#define mtb_str_has_suffix_lit(s, x, ...) mtb_str_has_suffix(s, mtb_str_lit(x), __VA_ARGS__)
+#define mtb_str_has_suffix_cstr(s, x, ...) mtb_str_has_suffix(s, mtb_str_from_cstr(x), __VA_ARGS__)
 
 public MtbStr mtb_str_trim(MtbStr str);
+public MtbStr mtb_str_trim_beg(MtbStr str);
+public MtbStr mtb_str_trim_end(MtbStr str);
+public MtbStr mtb_str_skip(MtbStr str, u64 length);
+public MtbStr mtb_str_chop(MtbStr str, u64 length);
 public MtbStr mtb_str_to_lower(MtbArena *arena, MtbStr str);
 public MtbStr mtb_str_to_upper(MtbArena *arena, MtbStr str);
 public MtbStr mtb_str_dup(MtbArena *arena, MtbStr str);
 public MtbStr mtb_str_cat(MtbArena *arena, MtbStr a, MtbStr b);
 public MtbStr mtb_str_substr(MtbStr str, u64 beg, u64 end);
+public MtbStr mtb_str_prefix(MtbStr str, u64 length);
+public MtbStr mtb_str_suffix(MtbStr str, u64 length);
 #define mtb_str_is_empty(s) ((bool)((s).length == 0))
 
 
@@ -86,6 +106,7 @@ public void mtb_str_builder_appendf(MtbStrBuilder *sb, char *fmt, ...);
 public void mtb_str_builder_prepend(MtbStrBuilder *sb, MtbStr *str);
 public void mtb_str_builder_prependf(MtbStrBuilder *sb, char *fmt, ...);
 public MtbStr mtb_str_join(MtbStrBuilder *sb, MtbStr delim);
-#define mtb_str_join_char(sb, c) mtb_str_join(sb, mtb_str_char(c))
+#define mtb_str_join_lit(s, d) mtb_str_join(s, mtb_str_lit(d))
+#define mtb_str_join_char(s, d) mtb_str_join(s, mtb_str_char(d))
 
 #endif // MTB_STRING_H
