@@ -7,6 +7,7 @@
 #include "mtb_arena.h"
 #include "mtb_dynarr.h"
 #include "mtb_string.h"
+#include "mtb_rng.h"
 
 #include "mtb_macro.c"
 #include "mtb_type.c"
@@ -14,5 +15,6 @@
 #include "mtb_arena.c"
 #include "mtb_dynarr.c"
 #include "mtb_string.c"
+#include "mtb_rng.c"
 
 #endif //MTB_MTB_ALL_H
