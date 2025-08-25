@@ -6,24 +6,28 @@
 #include "mtb_rng.h"
 
 
-public void
-mtb_rng32_init(MtbRng32 *rng, u64 state, u64 inc)
-{
-    rng->state = 0;
-    rng->inc = (inc << 1) | 1;  // ensure oddness
-    mtb_rng32_next(rng);
-    rng->state += state;
-    mtb_rng32_next(rng);
+intern u64 _mtb_rng32_splitmix64(u64 *seed) {
+    u64 result = (*seed += u64_lit(0x9e3779b97f4a7c15));
+    result = (result ^ (result >> 30)) * u64_lit(0xbf58476d1ce4e5b9);
+    result = (result ^ (result >> 27)) * u64_lit(0x94d049bb133111eb);
+    return result ^ (result >> 31);
 }
 
 public void
-mtb_rng64_init(MtbRng64 *rng, u64 state1, u64 inc1, u64 state2, u64 inc2)
+mtb_rng32_init(MtbRng32 *rng, u64 seed)
 {
-    if (inc1 == inc2) {
-        inc2 = ~inc2; // streams must be distinct
-    }
-    mtb_rng32_init(&rng->gens[0], state1, inc1);
-    mtb_rng32_init(&rng->gens[1], state2, inc2);
+    // Use splitmix64 for proper seeding
+    rng->state = _mtb_rng32_splitmix64(&seed);
+    rng->inc = _mtb_rng32_splitmix64(&seed) | 1; // ensure oddness
+}
+
+public void
+mtb_rng64_init(MtbRng64 *rng, u64 seed)
+{
+    mtb_rng32_init(&rng->gens[0], seed);
+    do {
+        mtb_rng32_init(&rng->gens[1], _mtb_rng32_splitmix64(&seed));
+    } while (rng->gens[0].inc == rng->gens[1].inc); // must be distinct!
 }
 
 public u32
@@ -31,11 +35,11 @@ mtb_rng32_next(MtbRng32 *rng)
 {
     // PCG-XSH-RR: output = rotate32((state ^ (state >> 18)) >> 27, state >> 59)
     u64 state = rng->state;
-    u32 xorShifted = (u32)((state ^ (state >> 18)) >> 27);
-    u32 rotation = (u32)(state >> 59);
+    u32 xorShifted = u32_cast((state ^ (state >> 18)) >> 27);
+    u32 rotation = u32_cast(state >> 59);
     u32 output = (xorShifted >> rotation) | (xorShifted << ((-rotation) & 31));
 
-    rng->state = state * (u64)0x5851f42d4c957f2d + rng->inc;
+    rng->state = state * u64_lit(0x5851f42d4c957f2d) + rng->inc;
 
     return output;
 }
@@ -95,7 +99,7 @@ intern void
 test_mtb_rng32()
 {
     MtbRng32 rng = {0};
-    mtb_rng32_init(&rng, time(nil), (intptr_t)&rng);
+    mtb_rng32_init(&rng, time(nil));
 
     i32 n = 100000000;
 
@@ -114,7 +118,7 @@ intern void
 test_mtb_rng64()
 {
     MtbRng64 rng = {0};
-    mtb_rng64_init(&rng, time(nil), (intptr_t)&rng.gens[0], time(nil), (intptr_t)&rng.gens[1]);
+    mtb_rng64_init(&rng, time(nil));
 
     i32 n = 100000000;
 

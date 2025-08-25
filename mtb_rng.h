@@ -22,8 +22,8 @@ struct mtb_rng64
 };
 
 
-public void mtb_rng32_init(MtbRng32 *rng, u64 state, u64 inc);
-public void mtb_rng64_init(MtbRng64 *rng, u64 state1, u64 inc1, u64 state2, u64 inc2);
+public void mtb_rng32_init(MtbRng32 *rng, u64 seed);
+public void mtb_rng64_init(MtbRng64 *rng, u64 seed);
 
 // [0, MAX]
 public u32 mtb_rng32_next(MtbRng32 *rng);

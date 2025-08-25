@@ -1,6 +1,7 @@
 #ifndef MTB_TYPE_H
 #define MTB_TYPE_H
 
+#include <float.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <limits.h>
@@ -40,6 +41,25 @@ global u8  U8_MAX  = UINT8_MAX;
 global u16 U16_MAX = UINT16_MAX;
 global u32 U32_MAX = UINT32_MAX;
 global u64 U64_MAX = UINT64_MAX;
+
+global f32 F32_MAX = FLT_MAX;
+global f64 F64_MAX = DBL_MAX;
+
+global f32 F32_MIN = FLT_MIN;
+global f64 F64_MIN = DBL_MIN;
+
+
+/* Typed Constant Literal */
+
+#define i8_lit(c)  INT8_C(c)
+#define i16_lit(c) INT16_C(c)
+#define i32_lit(c) INT32_C(c)
+#define i64_lit(c) INT64_C(c)
+
+#define u8_lit(c)  UINT8_C(c)
+#define u16_lit(c) UINT16_C(c)
+#define u32_lit(c) UINT32_C(c)
+#define u64_lit(c) UINT64_C(c)
 
 
 /* Safe Comparisons */
@@ -135,6 +155,22 @@ global u64 U64_MAX = UINT64_MAX;
 #define mtb_add_u64(a, b) _mtb_add(a, b, u64, mtb_id(_a), mtb_id(_b), mtb_id(_r))
 #define mtb_sub_u64(a, b) _mtb_sub(a, b, u64, mtb_id(_a), mtb_id(_b), mtb_id(_r))
 #define mtb_mul_u64(a, b) _mtb_mul(a, b, u64, mtb_id(_a), mtb_id(_b), mtb_id(_r))
+
+
+/* Type casts */
+
+#define i8_cast(c)  ((i8)(c))
+#define i16_cast(c) ((i16)(c))
+#define i32_cast(c) ((i32)(c))
+#define i64_cast(c) ((i64)(c))
+
+#define u8_cast(c)  ((u8)(c))
+#define u16_cast(c) ((u16)(c))
+#define u32_cast(c) ((u32)(c))
+#define u64_cast(c) ((u64)(c))
+
+#define f32_cast(c) ((f32)(c))
+#define f64_cast(c) ((f64)(c))
 
 
 /* Safe Type Casts */
