@@ -24,17 +24,25 @@ struct mtb_rng64
 
 public void mtb_rng32_init(MtbRng32 *rng, u64 seed);
 public void mtb_rng64_init(MtbRng64 *rng, u64 seed);
+public void mtb_rng32_global_init(u64 seed);
+public void mtb_rng64_global_init(u64 seed);
 
 // [0, MAX]
 public u32 mtb_rng32_next(MtbRng32 *rng);
 public u64 mtb_rng64_next(MtbRng64 *rng);
+public u32 mtb_rng32_global_next(void);
+public u64 mtb_rng64_global_next(void);
 
 // [0, range)
 public u32 mtb_rng32_next_bounded(MtbRng32 *rng, u32 range);
 public u64 mtb_rng64_next_bounded(MtbRng64 *rng, u64 range);
+public u32 mtb_rng32_global_next_bounded(u32 range);
+public u64 mtb_rng64_global_next_bounded(u64 range);
 
 // [0.0, 1.0]
 public f32 mtb_rng32_next_unit(MtbRng32 *rng);
 public f64 mtb_rng64_next_unit(MtbRng64 *rng);
+public f32 mtb_rng32_global_next_unit(void);
+public f64 mtb_rng64_global_next_unit(void);
 
 #endif //MTB_MTB_RNG_H

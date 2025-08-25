@@ -6,6 +6,13 @@
 #include "mtb_rng.h"
 
 
+global MtbRng32 _rng32_global = { u64_lit(0x853c49e6748fea9b), u64_lit(0xda3e39cb94b95bdb) };
+global MtbRng64 _rng64_global = {{
+    { u64_lit(0x979c9a98d8462005), u64_lit(0x7d3e9cb6cfe0549b) },
+    { u64_lit(0x0000000000000001), u64_lit(0xda3e39cb94b95bdb) }
+}};
+
+
 intern u64 _mtb_rng32_splitmix64(u64 *seed) {
     u64 result = (*seed += u64_lit(0x9e3779b97f4a7c15));
     result = (result ^ (result >> 30)) * u64_lit(0xbf58476d1ce4e5b9);
@@ -30,6 +37,18 @@ mtb_rng64_init(MtbRng64 *rng, u64 seed)
     } while (rng->gens[0].inc == rng->gens[1].inc); // must be distinct!
 }
 
+public void
+mtb_rng32_global_init(u64 seed)
+{
+    mtb_rng32_init(&_rng32_global, seed);
+}
+
+public void
+mtb_rng64_global_init(u64 seed)
+{
+    mtb_rng64_init(&_rng64_global, seed);
+}
+
 public u32
 mtb_rng32_next(MtbRng32 *rng)
 {
@@ -50,6 +69,18 @@ mtb_rng64_next(MtbRng64 *rng)
     u32 h = mtb_rng32_next(&rng->gens[0]);
     u32 l = mtb_rng32_next(&rng->gens[1]);
     return ((u64)h << 32) | l;
+}
+
+public u32
+mtb_rng32_global_next(void)
+{
+    return mtb_rng32_next(&_rng32_global);
+}
+
+public u64
+mtb_rng64_global_next(void)
+{
+    return mtb_rng64_next(&_rng64_global);
 }
 
 public u32
@@ -76,6 +107,18 @@ mtb_rng64_next_bounded(MtbRng64 *rng, u64 range)
     return x;
 }
 
+public u32
+mtb_rng32_global_next_bounded(u32 range)
+{
+    return mtb_rng32_next_bounded(&_rng32_global, range);
+}
+
+public u64
+mtb_rng64_global_next_bounded(u64 range)
+{
+    return mtb_rng64_next_bounded(&_rng64_global, range);
+}
+
 public f32
 mtb_rng32_next_unit(MtbRng32 *rng)
 {
@@ -88,11 +131,24 @@ mtb_rng64_next_unit(MtbRng64 *rng)
     return ldexp((f64)mtb_rng64_next(rng), -64);
 }
 
+public f32
+mtb_rng32_global_next_unit(void)
+{
+    return mtb_rng32_next_unit(&_rng32_global);
+}
+
+public f64
+mtb_rng64_global_next_unit(void)
+{
+    return mtb_rng64_next_unit(&_rng64_global);
+}
+
 
 #ifdef MTB_RNG_TESTS
 
 #include <assert.h>
 #include <time.h>
+#include <stdio.h>
 
 
 intern void
