@@ -100,7 +100,7 @@ public MtbStr mtb_str_cat(MtbArena *arena, MtbStr a, MtbStr b);
 public MtbStr mtb_str_substr(MtbStr str, u64 beg, u64 end);
 public MtbStr mtb_str_prefix(MtbStr str, u64 length);
 public MtbStr mtb_str_suffix(MtbStr str, u64 length);
-#define mtb_str_is_empty(s) ((bool)((s).length == 0))
+public bool mtb_str_is_empty(MtbStr str);
 
 
 /* String List */
@@ -116,8 +116,8 @@ struct mtb_str_list
 };
 
 public void mtb_str_list_init(MtbArena *arena, MtbStrList *list);
-#define mtb_str_list_clear(l) mtb_list_reset(&(l)->node)
-#define mtb_str_list_is_empty(l) mtb_list_is_empty(&(l)->node)
+public void mtb_str_list_clear(MtbStrList *list);
+public bool mtb_str_list_is_empty(MtbStrList *list);
 
 public MtbStrList *mtb_str_list_append(MtbStrList *list, MtbStr *str);
 #define mtb_str_list_append_lit(l, s) mtb_str_list_append(l, &mtb_str_lit(s))

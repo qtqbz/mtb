@@ -259,11 +259,29 @@ public MtbStr mtb_str_suffix(MtbStr str, u64 length)
     return str;
 }
 
+public bool
+mtb_str_is_empty(MtbStr str)
+{
+    return str.length == 0;
+}
+
 public void
 mtb_str_list_init(MtbArena *arena, MtbStrList *list)
 {
     list->arena = arena;
     mtb_list_init(&list->node);
+}
+
+public void
+mtb_str_list_clear(MtbStrList *list)
+{
+    mtb_list_reset(&list->node);
+}
+
+public bool
+mtb_str_list_is_empty(MtbStrList *list)
+{
+    return mtb_list_is_empty(&list->node);
 }
 
 public MtbStrList *

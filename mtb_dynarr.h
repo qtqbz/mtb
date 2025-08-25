@@ -26,13 +26,13 @@ struct mtb_dynarr
 
 public void mtb_dynarr_init(MtbArena *arena, MtbDynArr *array, u64 itemSize);
 public void mtb_dynarr_grow(MtbDynArr *array, u64 capacity);
-#define mtb_dynarr_is_empty(a) ((bool)((a)->length == 0))
-#define mtb_dynarr_clear(a) (a)->length = 0
+public bool mtb_dynarr_is_empty(MtbDynArr *array);
+public void mtb_dynarr_clear(MtbDynArr *array);
 
 public void *mtb_dynarr_insert_n(MtbDynArr *array, u64 from, u64 n);
-#define mtb_dynarr_insert(a, i) mtb_dynarr_insert_n(a, i, 1)
+public void *mtb_dynarr_insert(MtbDynArr *array, u64 at);
 public void *mtb_dynarr_remove_n(MtbDynArr *array, u64 from, u64 n);
-#define mtb_dynarr_remove(a, i) mtb_dynarr_remove_n(a, i, 1)
+public void *mtb_dynarr_remove(MtbDynArr *array, u64 at);
 public void *mtb_dynarr_get(MtbDynArr *array, u64 at);
 
 public void *mtb_dynarr_copy_n(MtbDynArr *array, u64 from, void *src, u64 n);
@@ -40,28 +40,16 @@ public void *mtb_dynarr_copy_n(MtbDynArr *array, u64 from, void *src, u64 n);
 
 /* Stack API */
 
-#define _mtb_dynarr_push(s, _s) ({ \
-    __auto_type _s = (s); \
-    mtb_dynarr_insert(_s, (_s)->length); \
-})
-#define mtb_dynarr_push(s) _mtb_dynarr_push(s, mtb_id(_s))
-#define _mtb_dynarr_pop(s, _s) ({ \
-    __auto_type _s = (s); \
-    mtb_dynarr_remove(_s, (_s)->length - 1); \
-})
-#define mtb_dynarr_pop(s) _mtb_dynarr_pop(s, mtb_id(_s))
-#define _mtb_dynarr_top(s, _s) ({ \
-    __auto_type _s = (s); \
-    mtb_dynarr_get(_s, (_s)->length - 1); \
-})
-#define mtb_dynarr_top(s) _mtb_dynarr_top(s, mtb_id(_s))
+public void *mtb_dynarr_push(MtbDynArr *array);
+public void *mtb_dynarr_pop(MtbDynArr *array);
+public void *mtb_dynarr_top(MtbDynArr *array);
 
 
 /* Queue API */
 
-#define mtb_dynarr_enq(a) mtb_dynarr_insert(a, 0)
-#define mtb_dynarr_deq(a) mtb_dynarr_pop(a)
-#define mtb_dynarr_front(a) mtb_dynarr_top(a)
+public void *mtb_dynarr_enq(MtbDynArr *array);
+public void *mtb_dynarr_deq(MtbDynArr *array);
+public void *mtb_dynarr_front(MtbDynArr *array);
 
 
 #endif //MTB_MTB_DYNARR_H

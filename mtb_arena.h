@@ -75,6 +75,6 @@ public void *mtb_arena_bump_opt(MtbArena *arena, u64 size, MtbArenaBumpOptions o
 public MtbArenaSavePoint mtb_arena_save(MtbArena *arena);
 public void mtb_arena_restore(MtbArena *arena, MtbArenaSavePoint *sp);
 
-#define mtb_arena_clear(a) (a)->offset = 0
+public void mtb_arena_clear(MtbArena *arena);
 
 #endif //MTB_ARENA_H

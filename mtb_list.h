@@ -2,7 +2,6 @@
 #define MTB_LIST_H
 
 #include "mtb_macro.h"
-#include "mtb_type.h"
 
 
 typedef struct mtb_list_node MtbListNode;
@@ -20,32 +19,32 @@ struct mtb_list_node
 #define mtb_list_foreach(h, i) _mtb_list_foreach(h, i, mtb_id(_h))
 
 public void mtb_list_init(MtbListNode *head);
-#define mtb_list_reset(h) mtb_list_init(h)
+public void mtb_list_reset(MtbListNode *head);
 public bool mtb_list_is_empty(MtbListNode *head);
 public MtbListNode *mtb_list_remove(MtbListNode *item);
 public MtbListNode *mtb_list_insert_before(MtbListNode *pivot, MtbListNode *item);
-#define mtb_list_insert_after(p, i) mtb_list_insert_before((p)->next, i)
+public MtbListNode *mtb_list_insert_after(MtbListNode *pivot, MtbListNode *item);
 
-#define mtb_list_add_last(h, i) mtb_list_insert_before(h, i)
+public MtbListNode *mtb_list_add_last(MtbListNode *head, MtbListNode *item);
 public MtbListNode *mtb_list_remove_last(MtbListNode *head);
 public MtbListNode *mtb_list_get_last(MtbListNode *head);
 
-#define mtb_list_add_first(h, i) mtb_list_insert_after(h, i)
+public MtbListNode *mtb_list_add_first(MtbListNode *head, MtbListNode *item);
 public MtbListNode *mtb_list_remove_first(MtbListNode *head);
 public MtbListNode *mtb_list_get_first(MtbListNode *head);
 
 
 /* Stack API */
 
-#define mtb_list_push(s, i) mtb_list_add_last(s, i)
-#define mtb_list_pop(s) mtb_list_remove_last(s)
-#define mtb_list_top(s) mtb_list_get_last(s)
+public MtbListNode *mtb_list_push(MtbListNode *head, MtbListNode *item);
+public MtbListNode *mtb_list_pop(MtbListNode *head);
+public MtbListNode *mtb_list_top(MtbListNode *head);
 
 
 /* Queue API */
 
-#define mtb_list_enq(q, i) mtb_list_add_last(q, i)
-#define mtb_list_deq(q) mtb_list_remove_first(q)
-#define mtb_list_front(q) mtb_list_get_first(q)
+public MtbListNode *mtb_list_enq(MtbListNode *head, MtbListNode *item);
+public MtbListNode *mtb_list_deq(MtbListNode *head);
+public MtbListNode *mtb_list_front(MtbListNode *head);
 
 #endif //MTB_LIST_H

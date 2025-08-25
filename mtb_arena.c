@@ -139,6 +139,12 @@ mtb_arena_restore(MtbArena *arena, MtbArenaSavePoint *sp)
     arena->offset = sp->offset;
 }
 
+public void
+mtb_arena_clear(MtbArena *arena)
+{
+    arena->offset = 0;
+}
+
 
 #ifdef MTB_ARENA_TESTS
 

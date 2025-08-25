@@ -1,4 +1,5 @@
 #include "mtb_list.h"
+#include "mtb_type.h"
 
 
 public void
@@ -7,10 +8,24 @@ mtb_list_init(MtbListNode *head)
     head->next = head->prev = head;
 }
 
+public void
+mtb_list_reset(MtbListNode *head)
+{
+    mtb_list_init(head);
+}
+
 public bool
 mtb_list_is_empty(MtbListNode *head)
 {
     return head->next == head;
+}
+
+public MtbListNode *
+mtb_list_remove(MtbListNode *item)
+{
+    item->prev->next = item->next;
+    item->next->prev = item->prev;
+    return item;
 }
 
 public MtbListNode *
@@ -24,11 +39,15 @@ mtb_list_insert_before(MtbListNode *pivot, MtbListNode *item)
 }
 
 public MtbListNode *
-mtb_list_remove(MtbListNode *item)
+mtb_list_insert_after(MtbListNode *pivot, MtbListNode *item)
 {
-    item->prev->next = item->next;
-    item->next->prev = item->prev;
-    return item;
+    return mtb_list_insert_before(pivot->next, item);
+}
+
+public MtbListNode *
+mtb_list_add_last(MtbListNode *head, MtbListNode *item)
+{
+    return mtb_list_insert_before(head, item);
 }
 
 public MtbListNode *
@@ -44,6 +63,12 @@ mtb_list_get_last(MtbListNode *head)
 }
 
 public MtbListNode *
+mtb_list_add_first(MtbListNode *head, MtbListNode *item)
+{
+    return mtb_list_insert_after(head, item);
+}
+
+public MtbListNode *
 mtb_list_remove_first(MtbListNode *head)
 {
     return mtb_list_is_empty(head) ? nil : mtb_list_remove(head->next);
@@ -53,6 +78,42 @@ public MtbListNode *
 mtb_list_get_first(MtbListNode *head)
 {
     return mtb_list_is_empty(head) ? nil : head->next;
+}
+
+public MtbListNode *
+mtb_list_push(MtbListNode *head, MtbListNode *item)
+{
+    return mtb_list_add_last(head, item);
+}
+
+public MtbListNode *
+mtb_list_pop(MtbListNode *head)
+{
+    return mtb_list_remove_last(head);
+}
+
+public MtbListNode *
+mtb_list_top(MtbListNode *head)
+{
+    return mtb_list_get_last(head);
+}
+
+public MtbListNode *
+mtb_list_enq(MtbListNode *head, MtbListNode *item)
+{
+    return mtb_list_add_last(head, item);
+}
+
+public MtbListNode *
+mtb_list_deq(MtbListNode *head)
+{
+    return mtb_list_remove_first(head);
+}
+
+public MtbListNode *
+mtb_list_front(MtbListNode *head)
+{
+    return mtb_list_get_first(head);
 }
 
 
