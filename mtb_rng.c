@@ -1,8 +1,6 @@
 // Based on "PCG: A Family of Simple Fast Space-Efficient Statistically Good Algorithms
 // for Random Number Generation", M.E. O'Neill, 2014, https://www.pcg-random.org
 
-#include <math.h>
-
 #include "mtb_rng.h"
 
 
@@ -122,13 +120,13 @@ mtb_rng64_global_next_bounded(u64 range)
 public f32
 mtb_rng32_next_unit(MtbRng32 *rng)
 {
-    return ldexpf((f32)mtb_rng32_next(rng), -32);
+    return f32_cast(mtb_rng32_next(rng) >> 8) * 0x1.0p-24f;
 }
 
 public f64
 mtb_rng64_next_unit(MtbRng64 *rng)
 {
-    return ldexp((f64)mtb_rng64_next(rng), -64);
+    return f64_cast(mtb_rng64_next(rng) >> 11) * 0x1.0p-53;
 }
 
 public f32
@@ -148,7 +146,6 @@ mtb_rng64_global_next_unit(void)
 
 #include <assert.h>
 #include <time.h>
-#include <stdio.h>
 
 
 intern void
