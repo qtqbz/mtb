@@ -21,6 +21,7 @@ struct mtb_list_node
 public void mtb_list_init(MtbListNode *head);
 public void mtb_list_reset(MtbListNode *head);
 public bool mtb_list_is_empty(MtbListNode *head);
+
 public MtbListNode *mtb_list_remove(MtbListNode *item);
 public MtbListNode *mtb_list_insert_before(MtbListNode *pivot, MtbListNode *item);
 public MtbListNode *mtb_list_insert_after(MtbListNode *pivot, MtbListNode *item);
