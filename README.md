@@ -17,6 +17,7 @@ This is a collection of reusable C utils.
 - [mtb_list.h](./mtb_list.h) - doubly linked list.
 - [mtb_arena.h](./mtb_arena.h) - arena allocator.
 - [mtb_dynarr.h](./mtb_dynarr.h) - dynamically growing array (aka vector).
+- [mtb_segarr.h](./mtb_segarr.h) - segment array (aka growable stack w/o re-alloc).
 - [mtb_string.h](./mtb_string.h) - strings with partial UTF-8 support.
 - [mtb_rng.h](./mtb_rng.h) - simple & fast non-cryptographic pseudo-RNGs.
 - [tests.h](./tests.c) - runs all unit tests.
