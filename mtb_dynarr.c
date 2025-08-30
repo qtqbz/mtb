@@ -41,9 +41,9 @@ mtb_dynarr_clear(MtbDynArr *array)
 }
 
 public void *
-mtb_dynarr_insert_n(MtbDynArr *array, u64 from, u64 n)
+mtb_dynarr_insert_n(MtbDynArr *array, u64 begIndex, u64 n)
 {
-    mtb_assert_always(from <= array->length);
+    mtb_assert_always(begIndex <= array->length);
     mtb_assert_always(n > 0);
 
     u64 capacity = array->capacity;
@@ -53,9 +53,9 @@ mtb_dynarr_insert_n(MtbDynArr *array, u64 from, u64 n)
         mtb_dynarr_grow(array, mtb_max_u64(capacity, minCapacity));
     }
 
-    u8 *beg = array->items + from * array->itemSize;
-    if (from < array->length) {
-        memmove(beg + n * array->itemSize, beg, (array->length - from) * array->itemSize);
+    u8 *beg = array->items + begIndex * array->itemSize;
+    if (begIndex < array->length) {
+        memmove(beg + n * array->itemSize, beg, (array->length - begIndex) * array->itemSize);
     }
     array->length += n;
 
@@ -63,23 +63,23 @@ mtb_dynarr_insert_n(MtbDynArr *array, u64 from, u64 n)
 }
 
 public void *
-mtb_dynarr_insert(MtbDynArr *array, u64 at)
+mtb_dynarr_insert(MtbDynArr *array, u64 index)
 {
-    return mtb_dynarr_insert_n(array, at, 1);
+    return mtb_dynarr_insert_n(array, index, 1);
 }
 
 public void *
-mtb_dynarr_remove_n(MtbDynArr *array, u64 from, u64 n)
+mtb_dynarr_remove_n(MtbDynArr *array, u64 begIndex, u64 n)
 {
-    mtb_assert_always(from < array->length);
+    mtb_assert_always(begIndex < array->length);
     mtb_assert_always(n > 0);
 
-    u64 to = mtb_add_u64(from, n);
-    mtb_assert_always(to <= array->length);
+    u64 endIndex = mtb_add_u64(begIndex, n);
+    mtb_assert_always(endIndex <= array->length);
 
-    u8 *beg = array->items + from * array->itemSize;
-    if (to < array->length) {
-        memmove(beg, array->items + to * array->itemSize, (array->length - to) * array->itemSize);
+    u8 *beg = array->items + begIndex * array->itemSize;
+    if (endIndex < array->length) {
+        memmove(beg, array->items + endIndex * array->itemSize, (array->length - endIndex) * array->itemSize);
     }
     array->length -= n;
 
@@ -87,22 +87,22 @@ mtb_dynarr_remove_n(MtbDynArr *array, u64 from, u64 n)
 }
 
 public void *
-mtb_dynarr_remove(MtbDynArr *array, u64 at)
+mtb_dynarr_remove(MtbDynArr *array, u64 index)
 {
-    return mtb_dynarr_remove_n(array, at, 1);
+    return mtb_dynarr_remove_n(array, index, 1);
 }
 
 public void *
-mtb_dynarr_get(MtbDynArr *array, u64 at)
+mtb_dynarr_get(MtbDynArr *array, u64 index)
 {
-    mtb_assert_always(at < array->length);
-    return array->items + at * array->itemSize;
+    mtb_assert_always(index < array->length);
+    return array->items + index * array->itemSize;
 }
 
 public void *
-mtb_dynarr_copy_n(MtbDynArr *array, u64 from, void *src, u64 n)
+mtb_dynarr_copy_n(MtbDynArr *array, u64 begIndex, void *src, u64 n)
 {
-    return memmove(mtb_dynarr_insert_n(array, from, n), src, n * array->itemSize);
+    return memmove(mtb_dynarr_insert_n(array, begIndex, n), src, n * array->itemSize);
 }
 
 public void *

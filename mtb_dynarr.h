@@ -29,13 +29,13 @@ public void mtb_dynarr_grow(MtbDynArr *array, u64 capacity);
 public bool mtb_dynarr_is_empty(MtbDynArr *array);
 public void mtb_dynarr_clear(MtbDynArr *array);
 
-public void *mtb_dynarr_insert_n(MtbDynArr *array, u64 from, u64 n);
-public void *mtb_dynarr_insert(MtbDynArr *array, u64 at);
-public void *mtb_dynarr_remove_n(MtbDynArr *array, u64 from, u64 n);
-public void *mtb_dynarr_remove(MtbDynArr *array, u64 at);
-public void *mtb_dynarr_get(MtbDynArr *array, u64 at);
+public void *mtb_dynarr_insert_n(MtbDynArr *array, u64 begIndex, u64 n);
+public void *mtb_dynarr_insert(MtbDynArr *array, u64 index);
+public void *mtb_dynarr_remove_n(MtbDynArr *array, u64 begIndex, u64 n);
+public void *mtb_dynarr_remove(MtbDynArr *array, u64 index);
+public void *mtb_dynarr_get(MtbDynArr *array, u64 index);
 
-public void *mtb_dynarr_copy_n(MtbDynArr *array, u64 from, void *src, u64 n);
+public void *mtb_dynarr_copy_n(MtbDynArr *array, u64 begIndex, void *src, u64 n);
 
 
 /* Stack API */
