@@ -100,7 +100,7 @@ mtb_segarr_top(MtbSegArr *array)
 
 
 intern void
-test_mtb_segarr_array(MtbArena arena)
+test_mtb_segarr_add_last(MtbArena arena)
 {
     MtbSegArr array = {0};
     mtb_segarr_init(&arena, &array, sizeof(u64));
@@ -112,11 +112,33 @@ test_mtb_segarr_array(MtbArena arena)
     for (u64 i = 0; i < n; i++) {
         assert(*(u64 *)mtb_segarr_get(&array, i) == i);
     }
+    mtb_segarr_clear(&array);
+    assert(mtb_segarr_is_empty(&array));
+}
+
+intern void
+test_mtb_segarr_remove_last(MtbArena arena)
+{
+    MtbSegArr array = {0};
+    mtb_segarr_init(&arena, &array, sizeof(u64));
+
+    u64 n = 100000;
+    for (u64 i = 0; i < n; i++) {
+        *(u64 *)mtb_segarr_add_last(&array) = i;
+    }
     for (u64 i = n; i > 0 ; i--) {
         assert(*(u64 *)mtb_segarr_remove_last(&array) == (i - 1));
     }
     assert(mtb_segarr_is_empty(&array));
+}
 
+intern void
+test_mtb_segarr_add_last_n(MtbArena arena)
+{
+    MtbSegArr array = {0};
+    mtb_segarr_init(&arena, &array, sizeof(u64));
+
+    u64 n = 100000;
     u64 *arr = mtb_arena_bump(&arena, u64, n);
     for (u64 i = 0; i < n; i++) {
         arr[i] = n - i - 1;
@@ -152,7 +174,9 @@ test_mtb_segarr(void)
     MtbArena arena = {0};
     mtb_arena_init(&arena, mb(10), &MTB_ARENA_DEF_ALLOCATOR);
 
-    test_mtb_segarr_array(arena);
+    test_mtb_segarr_add_last(arena);
+    test_mtb_segarr_remove_last(arena);
+    test_mtb_segarr_add_last_n(arena);
     test_mtb_segarr_stack(arena);
 
     mtb_arena_deinit(&arena);
