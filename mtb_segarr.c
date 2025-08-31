@@ -1,12 +1,17 @@
 #include "mtb_segarr.h"
 
 
-#define _mtb_segarr_segment_count(i) \
+#define _mtb_segarr_segment(i) \
     (u64_lit(63) - __builtin_clzll((i >> MTB_SEGARR_SKIPPED_SEGMENTS) + u64_lit(1)))
+
 #define _mtb_segarr_segment_length(s) \
-    ((u64_lit(1) << MTB_SEGARR_SKIPPED_SEGMENTS) << s)
-#define _mtb_segarr_segment_offset(s, i) \
-    ((u64)(i - (_mtb_segarr_segment_length(s) - (u64_lit(1) << MTB_SEGARR_SKIPPED_SEGMENTS))))
+    ((u64_lit(1) << MTB_SEGARR_SKIPPED_SEGMENTS) << (s))
+
+#define _mtb_segarr_segment_start(s) \
+    (_mtb_segarr_segment_length(s) - (u64_lit(1) << MTB_SEGARR_SKIPPED_SEGMENTS))
+
+#define _mtb_segarr_item(s, i) \
+    (i - _mtb_segarr_segment_start(s))
 
 
 public void
@@ -33,14 +38,14 @@ public void *
 mtb_segarr_add_last(MtbSegArr *array)
 {
     u64 index = array->count++;
-    u64 segment = _mtb_segarr_segment_count(index);
-    u64 offset = _mtb_segarr_segment_offset(segment, index);
+    u64 segment = _mtb_segarr_segment(index);
+    u64 item = _mtb_segarr_item(segment, index);
     if (array->segments[segment] == nil) {
         u64 length = _mtb_segarr_segment_length(segment);
         u64 size = mtb_mul_u64(length, array->itemSize);
         array->segments[segment] = mtb_arena_bump(array->arena, u8, size);
     }
-    return array->segments[segment] + offset * array->itemSize;
+    return array->segments[segment] + item * array->itemSize;
 }
 
 public void *
@@ -48,18 +53,18 @@ mtb_segarr_remove_last(MtbSegArr *array)
 {
     mtb_assert_always(array->count > 0);
     u64 index = --array->count;
-    u64 segment = _mtb_segarr_segment_count(index);
-    u64 offset = _mtb_segarr_segment_offset(segment, index);
-    return array->segments[segment] + offset * array->itemSize;
+    u64 segment = _mtb_segarr_segment(index);
+    u64 item = _mtb_segarr_item(segment, index);
+    return array->segments[segment] + item * array->itemSize;
 }
 
 public void *
 mtb_segarr_get(MtbSegArr *array, u64 index)
 {
     mtb_assert_always(index < array->count);
-    u64 segment = _mtb_segarr_segment_count(index);
-    u64 offset = _mtb_segarr_segment_offset(segment, index);
-    return array->segments[segment] + offset * array->itemSize;
+    u64 segment = _mtb_segarr_segment(index);
+    u64 item = _mtb_segarr_item(segment, index);
+    return array->segments[segment] + item * array->itemSize;
 }
 
 public void
