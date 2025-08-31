@@ -6,7 +6,7 @@
 #include "mtb_arena.h"
 
 #define MTB_SEGARR_SKIPPED_SEGMENTS 6
-#define MTB_SEGARR_MAX_SEGMENTS 26 // 32 - 6
+#define MTB_SEGARR_MAX_SEGMENTS 42 // 48 - 6
 
 
 typedef struct mtb_segarr MtbSegArr;
@@ -15,7 +15,6 @@ struct mtb_segarr
     MtbArena *arena;
     u8 *segments[MTB_SEGARR_MAX_SEGMENTS];
     u64 count;
-    u64 offset;
     u64 itemSize;
 };
 
