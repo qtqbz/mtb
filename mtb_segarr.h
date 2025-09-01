@@ -6,8 +6,8 @@
 #include "mtb_arena.h"
 
 
-#ifndef MTB_SEGARR_SKIPPED_SEGMENTS
-#define MTB_SEGARR_SKIPPED_SEGMENTS 6
+#ifndef MTB_SEGARR_SKIP_SEGMENTS
+#define MTB_SEGARR_SKIP_SEGMENTS 6
 #endif
 #ifndef MTB_SEGARR_MAX_SEGMENTS
 #define MTB_SEGARR_MAX_SEGMENTS 24
@@ -48,6 +48,21 @@ struct mtb_segarr
     u64 count;
     u64 itemSize;
 };
+
+
+/* Segment Array API */
+
+#define _mtb_segarr_segment(i) \
+    (u64_lit(63) - __builtin_clzll((i >> MTB_SEGARR_SKIP_SEGMENTS) + u64_lit(1)))
+
+#define _mtb_segarr_segment_length(s) \
+    ((u64_lit(1) << MTB_SEGARR_SKIP_SEGMENTS) << (s))
+
+#define _mtb_segarr_segment_start(s) \
+    (_mtb_segarr_segment_length(s) - (u64_lit(1) << MTB_SEGARR_SKIP_SEGMENTS))
+
+#define _mtb_segarr_item(s, i) \
+    (i - _mtb_segarr_segment_start(s))
 
 
 public void mtb_segarr_init(MtbArena *arena, MtbSegArr *array, u64 itemSize);

@@ -1,19 +1,6 @@
 #include "mtb_segarr.h"
 
 
-#define _mtb_segarr_segment(i) \
-    (u64_lit(63) - __builtin_clzll((i >> MTB_SEGARR_SKIPPED_SEGMENTS) + u64_lit(1)))
-
-#define _mtb_segarr_segment_length(s) \
-    ((u64_lit(1) << MTB_SEGARR_SKIPPED_SEGMENTS) << (s))
-
-#define _mtb_segarr_segment_start(s) \
-    (_mtb_segarr_segment_length(s) - (u64_lit(1) << MTB_SEGARR_SKIPPED_SEGMENTS))
-
-#define _mtb_segarr_item(s, i) \
-    (i - _mtb_segarr_segment_start(s))
-
-
 public void
 mtb_segarr_init(MtbArena *arena, MtbSegArr *array, u64 itemSize)
 {

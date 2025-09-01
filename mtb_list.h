@@ -2,6 +2,7 @@
 #define MTB_LIST_H
 
 #include "mtb_macro.h"
+#include "mtb_type.h"
 
 
 typedef struct mtb_list_node MtbListNode;
