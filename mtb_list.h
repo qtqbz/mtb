@@ -15,9 +15,9 @@ struct mtb_list_node
 
 /* Doubly Linked List API */
 
-#define _mtb_list_foreach(h, i, _h) \
-    for (MtbListNode *_h = (h), *i = _h->next; i != _h; i = i->next)
-#define mtb_list_foreach(h, i) _mtb_list_foreach(h, i, mtb_id(_h))
+#define _mtb_list_foreach(head, var, _head) \
+    for (MtbListNode *_head = (head), *var = _head->next; var != _head; var = var->next)
+#define mtb_list_foreach(head, var) _mtb_list_foreach(head, var, mtb_id(_head))
 
 public void mtb_list_init(MtbListNode *head);
 public void mtb_list_reset(MtbListNode *head);

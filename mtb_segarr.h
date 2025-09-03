@@ -65,7 +65,7 @@ struct mtb_segarr
     (i - _mtb_segarr_segment_start(s))
 
 
-public void mtb_segarr_init(MtbArena *arena, MtbSegArr *array, u64 itemSize);
+public void mtb_segarr_init(MtbSegArr *array, MtbArena *arena, u64 itemSize);
 public void mtb_segarr_clear(MtbSegArr *array);
 public bool mtb_segarr_is_empty(MtbSegArr *array);
 

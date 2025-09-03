@@ -19,12 +19,12 @@ struct mtb_dynarr
 
 /* Dynamic Array API */
 
-#define _mtb_dynarr_foreach(a, i, _a, _e) \
-    __auto_type _a = (a); \
-    for (void *_e = _a->items + _a->length * _a->itemSize, *i = _a->items; i < _e; i += _a->itemSize)
-#define mtb_dynarr_foreach(a, i) _mtb_dynarr_foreach(a, i, mtb_id(_a), mtb_id(_e))
+#define _mtb_dynarr_foreach(array, var, _array, _end) \
+    __auto_type _array = (array); \
+    for (void *_end = _array->items + _array->length * _array->itemSize, *var = _array->items; var < _end; var += _array->itemSize)
+#define mtb_dynarr_foreach(array, var) _mtb_dynarr_foreach(array, var, mtb_id(_array), mtb_id(_end))
 
-public void mtb_dynarr_init(MtbArena *arena, MtbDynArr *array, u64 itemSize);
+public void mtb_dynarr_init(MtbDynArr *array, MtbArena *arena, u64 itemSize);
 public void mtb_dynarr_grow(MtbDynArr *array, u64 capacity);
 public bool mtb_dynarr_is_empty(MtbDynArr *array);
 public void mtb_dynarr_clear(MtbDynArr *array);

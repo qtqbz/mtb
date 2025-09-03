@@ -4,7 +4,7 @@
 
 
 public void
-mtb_dynarr_init(MtbArena *arena, MtbDynArr *array, u64 itemSize)
+mtb_dynarr_init(MtbDynArr *array, MtbArena *arena, u64 itemSize)
 {
     mtb_assert_always(itemSize > 0);
 
@@ -151,7 +151,7 @@ intern void
 test_mtb_dynarr_insert(MtbArena arena)
 {
     MtbDynArr array = {0};
-    mtb_dynarr_init(&arena, &array, sizeof(u64));
+    mtb_dynarr_init(&array, &arena, sizeof(u64));
     assert(mtb_dynarr_is_empty(&array));
     assert(array.itemSize == sizeof(u64));
 
@@ -191,7 +191,7 @@ intern void
 test_mtb_dynarr_remove(MtbArena arena)
 {
     MtbDynArr array = {0};
-    mtb_dynarr_init(&arena, &array, sizeof(u64));
+    mtb_dynarr_init(&array, &arena, sizeof(u64));
     assert(mtb_dynarr_is_empty(&array));
     assert(array.itemSize == sizeof(u64));
 
@@ -222,7 +222,7 @@ intern void
 test_mtb_dynarr_grow(MtbArena arena)
 {
     MtbDynArr array = {0};
-    mtb_dynarr_init(&arena, &array, sizeof(u16));
+    mtb_dynarr_init(&array, &arena, sizeof(u16));
     assert(mtb_dynarr_is_empty(&array));
     assert(array.capacity == 0);
     assert(array.itemSize == sizeof(u16));
@@ -250,7 +250,7 @@ intern void
 test_mtb_dynarr_stack(MtbArena arena)
 {
     MtbDynArr stack = {0};
-    mtb_dynarr_init(&arena, &stack, sizeof(u32));
+    mtb_dynarr_init(&stack, &arena, sizeof(u32));
     assert(mtb_dynarr_is_empty(&stack));
     assert(stack.itemSize == sizeof(u32));
 
@@ -272,7 +272,7 @@ intern void
 test_mtb_dynarr_queue(MtbArena arena)
 {
     MtbDynArr queue = {0};
-    mtb_dynarr_init(&arena, &queue, sizeof(u32));
+    mtb_dynarr_init(&queue, &arena, sizeof(u32));
     assert(mtb_dynarr_is_empty(&queue));
     assert(queue.itemSize == sizeof(u32));
 
