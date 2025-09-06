@@ -109,10 +109,11 @@ public void *
 mtb_arena_bump_opt(MtbArena *arena, u64 size, MtbArenaBumpOptions opt)
 {
     mtb_assert_always(size > 0);
-    mtb_assert_always(mtb_is_pow2(opt.align));
+    mtb_assert_always(mtb_is_pow2_or_zero(opt.align));
 
     u64 oldOffset = arena->offset;
-    u64 padding = mtb_align_padding_pow2((u64)(arena->base + oldOffset), opt.align);
+    u64 align = mtb_max_u64(opt.align, MTB_ARENA_DEF_ALIGN);
+    u64 padding = mtb_align_padding_pow2((u64)(arena->base + oldOffset), align);
     u64 oldOffsetAligned = mtb_add_u64(oldOffset, padding);
     u64 newOffset = mtb_add_u64(oldOffsetAligned, size);
     mtb_assert_always(newOffset <= arena->size);

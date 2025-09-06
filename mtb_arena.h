@@ -68,9 +68,9 @@ public void mtb_arena_deinit(MtbArena *arena);
 
 public void *mtb_arena_bump_opt(MtbArena *arena, u64 size, MtbArenaBumpOptions opt);
 #define mtb_arena_bump_raw(arena, size, ...) \
-    mtb_arena_bump_opt(arena, size, (MtbArenaBumpOptions){ .align = MTB_ARENA_DEF_ALIGN, __VA_ARGS__ })
+    mtb_arena_bump_opt(arena, size, (MtbArenaBumpOptions){ __VA_ARGS__ })
 #define mtb_arena_bump(arena, type, count, ...) \
-    (type *)mtb_arena_bump_raw(arena, mtb_mul_u64(sizeof(type), (count)), .align = mtb_alignof(type), __VA_ARGS__)
+    (type *)mtb_arena_bump_opt(arena, mtb_mul_u64(sizeof(type), (count)), (MtbArenaBumpOptions){ .align = mtb_alignof(type), __VA_ARGS__ })
 
 public MtbArenaSavePoint mtb_arena_save(MtbArena *arena);
 public void mtb_arena_restore(MtbArena *arena, MtbArenaSavePoint *sp);
