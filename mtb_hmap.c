@@ -5,8 +5,8 @@ mtb_hmap_init_opt(MtbHmap *hmap,
                   MtbArena *arena,
                   u64 keySize,
                   u64 valueSize,
-                  u64 (*calcHash)(void *k),
-                  bool (*isEqual)(void *k1, void *k2),
+                  u64 (*key_hash)(void *k),
+                  bool (*key_equals)(void *k1, void *k2),
                   MtbHmapInitOptions opt)
 {
     mtb_assert_always(mtb_is_pow2_or_zero(opt.capacity));
@@ -26,8 +26,8 @@ mtb_hmap_init_opt(MtbHmap *hmap,
 
     hmap->entries = mtb_arena_bump(hmap->arena, u8, hmap->capacity * hmap->entrySize);
 
-    hmap->calcHash = calcHash;
-    hmap->isEqual = isEqual;
+    hmap->key_hash = key_hash;
+    hmap->key_equals = key_equals;
 }
 
 public void
@@ -71,7 +71,7 @@ mtb_hmap_grow(MtbHmap *hmap, u64 capacity)
             continue;
         }
         u8 *oldKey = mtb_hmap_entry_key(&oldHmap, oldIndex);
-        u64 hash = hmap->calcHash(oldKey);
+        u64 hash = hmap->key_hash(oldKey);
         u64 index = mtb_hmap_modulo_capacity(hmap, hash);
         MtbHmapEntryHeader *header = mtb_hmap_entry_header(hmap, index);
         while (header->occupied) {
@@ -91,11 +91,11 @@ mtb_hmap_put(MtbHmap *hmap, void *key)
     if (hmap->count >= mtb_hmap_threshold(hmap->capacity)) {
         mtb_hmap_grow(hmap, hmap->capacity << 1);
     }
-    u64 hash = hmap->calcHash(key);
+    u64 hash = hmap->key_hash(key);
     u64 index = mtb_hmap_modulo_capacity(hmap, hash);
     MtbHmapEntryHeader *header = mtb_hmap_entry_header(hmap, index);
     while (header->occupied && !header->removed) {
-        if (hmap->isEqual(mtb_hmap_entry_key(hmap, index), key)) {
+        if (hmap->key_equals(mtb_hmap_entry_key(hmap, index), key)) {
             return mtb_hmap_entry_value(hmap, index);
         }
         index = mtb_hmap_modulo_capacity(hmap, index + 1);
@@ -111,11 +111,11 @@ mtb_hmap_put(MtbHmap *hmap, void *key)
 public void *
 mtb_hmap_remove(MtbHmap *hmap, void *key)
 {
-    u64 hash = hmap->calcHash(key);
+    u64 hash = hmap->key_hash(key);
     u64 index = mtb_hmap_modulo_capacity(hmap, hash);
     MtbHmapEntryHeader *header = mtb_hmap_entry_header(hmap, index);
     while (header->occupied) {
-        if (!header->removed && hmap->isEqual(mtb_hmap_entry_key(hmap, index), key)) {
+        if (!header->removed && hmap->key_equals(mtb_hmap_entry_key(hmap, index), key)) {
             header->removed = true;
             hmap->count--;
             return mtb_hmap_entry_value(hmap, index);
@@ -129,11 +129,11 @@ mtb_hmap_remove(MtbHmap *hmap, void *key)
 public void *
 mtb_hmap_get(MtbHmap *hmap, void *key)
 {
-    u64 hash = hmap->calcHash(key);
+    u64 hash = hmap->key_hash(key);
     u64 index = mtb_hmap_modulo_capacity(hmap, hash);
     MtbHmapEntryHeader *header = mtb_hmap_entry_header(hmap, index);
     while (header->occupied) {
-        if (!header->removed && hmap->isEqual(mtb_hmap_entry_key(hmap, index), key)) {
+        if (!header->removed && hmap->key_equals(mtb_hmap_entry_key(hmap, index), key)) {
             return mtb_hmap_entry_value(hmap, index);
         }
         index = mtb_hmap_modulo_capacity(hmap, index + 1);
@@ -149,7 +149,7 @@ mtb_hmap_get(MtbHmap *hmap, void *key)
 #include <string.h>
 
 intern u64
-calcHashStr(void *key)
+calc_hash_str(void *key)
 {
     char *s = *(char **)key;
     u64 hash = 0;
@@ -158,7 +158,7 @@ calcHashStr(void *key)
 }
 
 intern bool
-isEqualStr(void *key1, void *key2)
+is_equal_str(void *key1, void *key2)
 {
     char *s1 = *(char **)key1;
     char *s2 = *(char **)key2;
@@ -486,7 +486,7 @@ test_mtb_hmap_put(MtbArena arena)
     };
 
     MtbHmap hmap = {0};
-    mtb_hmap_init(&hmap, &arena, char *, u64, calcHashStr, isEqualStr);
+    mtb_hmap_init(&hmap, &arena, char *, u64, calc_hash_str, is_equal_str);
     assert(mtb_hmap_is_empty(&hmap));
 
     char *textCopy = strcpy(mtb_arena_bump(&arena, char, strlen(text) + 1), text);
@@ -512,7 +512,7 @@ intern void
 test_mtb_hmap_remove(MtbArena arena)
 {
     MtbHmap hmap = {0};
-    mtb_hmap_init(&hmap, &arena, sizeof(char *), sizeof(u64), calcHashStr, isEqualStr);
+    mtb_hmap_init(&hmap, &arena, sizeof(char *), sizeof(u64), calc_hash_str, is_equal_str);
 
     char *k1 = "Pizza";
     u64 v1 = 11;

@@ -137,4 +137,26 @@ public void mtb_str_split_opt(MtbStrList *list, MtbStr str, MtbStr delim, MtbStr
 #define mtb_str_split_lit(list, str, delim, ...) mtb_str_split(list, str, mtb_str_lit(delim), __VA_ARGS__)
 #define mtb_str_split_char(list, str, delim, ...) mtb_str_split(list, str, mtb_str_char(delim), __VA_ARGS__)
 
+
+/* Hash map utils */
+
+public u64
+mtb_str_key_hash(void *key)
+{
+    MtbStr *s = (MtbStr *)key;
+    u64 hash = 0;
+    for (u64 i = 0; i < s->length; i++) {
+        hash = 17000069 * hash + s->chars[i];
+    }
+    return hash;
+}
+
+public bool
+mtb_str_key_equals(void *key1, void *key2)
+{
+    MtbStr *s1 = (MtbStr *)key1;
+    MtbStr *s2 = (MtbStr *)key2;
+    return mtb_str_is_equal(*s1, *s2);
+}
+
 #endif // MTB_STRING_H

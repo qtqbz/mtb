@@ -37,8 +37,8 @@ struct mtb_hmap
     u64 entrySize;
     u8 *entries;
 
-    u64 (*calcHash)(void *k);
-    bool (*isEqual)(void *k1, void *k2);
+    u64 (*key_hash)(void *k);
+    bool (*key_equals)(void *k1, void *k2);
 };
 
 typedef struct mtb_hmap_init_options MtbHmapInitOptions;
@@ -54,15 +54,16 @@ public void mtb_hmap_init_opt(MtbHmap *hmap,
                               MtbArena *arena,
                               u64 keySize,
                               u64 valueSize,
-                              u64 (*calcHash)(void *k),
-                              bool (*isEqual)(void *k1, void *k2),
+                              u64 (*key_hash)(void *k),
+                              bool (*key_equals)(void *k1, void *k2),
                               MtbHmapInitOptions opt);
-#define mtb_hmap_init(hmap, arena, keyType, valueType, calcHash, isEqual, ...) \
+#define mtb_hmap_init(hmap, arena, keyType, valueType, key_hash, key_equals, ...) \
     mtb_hmap_init_opt(hmap, \
                       arena, \
                       sizeof(keyType), \
                       sizeof(valueType), \
-                      calcHash, isEqual, \
+                      key_hash, \
+                      key_equals, \
                       (MtbHmapInitOptions){ \
                           .keyAlign = mtb_alignof(keyType), \
                           .valueAlign = mtb_alignof(valueType), \
