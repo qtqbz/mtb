@@ -37,7 +37,7 @@ global MtbArenaAllocator MTB_ARENA_DEF_VIRT_ALLOCATOR = {
 /* Arena */
 
 #ifndef MTB_ARENA_DEF_ALIGN
-#define MTB_ARENA_DEF_ALIGN 8
+#define MTB_ARENA_DEF_ALIGN sizeof(void *)
 #endif
 
 typedef struct mtb_arena MtbArena;

@@ -49,6 +49,9 @@
 #define mtb_is_pow2_or_zero(s) ((bool)((((s) - 1) & (s)) == 0))
 #define mtb_is_pow2(s) ((bool)((s) != 0 && mtb_is_pow2_or_zero((s))))
 
+#define mtb_leading_zeros_count(n) __builtin_clzg(n)
+#define mtb_roundup_pow2(n) (u64_lit(1) << (sizeof(u64) * CHAR_BIT - mtb_leading_zeros_count(n - 1)))
+
 
 /* Memory Utils */
 

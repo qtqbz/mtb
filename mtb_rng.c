@@ -85,7 +85,7 @@ public u32
 mtb_rng32_next_bounded(MtbRng32 *rng, u32 range)
 {
     mtb_assert_always(range > 0);
-    u32 mask = U32_MAX >> __builtin_clz((range - 1) | 1);
+    u32 mask = U32_MAX >> mtb_leading_zeros_count((range - 1) | 1);
     u32 x;
     do {
         x = mtb_rng32_next(rng) & mask;
@@ -97,7 +97,7 @@ public u64
 mtb_rng64_next_bounded(MtbRng64 *rng, u64 range)
 {
     mtb_assert_always(range > 0);
-    u64 mask = U64_MAX >> __builtin_clzl((range - 1) | 1);
+    u64 mask = U64_MAX >> mtb_leading_zeros_count((range - 1) | 1);
     u64 x;
     do {
         x = mtb_rng64_next(rng) & mask;

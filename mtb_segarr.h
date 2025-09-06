@@ -73,7 +73,7 @@ struct mtb_segarr
 /* Segment Array API */
 
 #define _mtb_segarr_segment(i) \
-    (u64_lit(63) - __builtin_clzll((i >> MTB_SEGARR_SKIP_SEGMENTS) + u64_lit(1)))
+    (u64_lit(63) - mtb_leading_zeros_count((i >> MTB_SEGARR_SKIP_SEGMENTS) + u64_lit(1)))
 
 #define _mtb_segarr_segment_length(s) \
     ((u64_lit(1) << MTB_SEGARR_SKIP_SEGMENTS) << (s))

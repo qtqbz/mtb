@@ -7,6 +7,7 @@
 #include "mtb_arena.h"
 #include "mtb_dynarr.h"
 #include "mtb_segarr.h"
+#include "mtb_hmap.h"
 #include "mtb_string.h"
 #include "mtb_rng.h"
 
@@ -16,6 +17,7 @@
 #include "mtb_arena.c"
 #include "mtb_dynarr.c"
 #include "mtb_segarr.c"
+#include "mtb_hmap.c"
 #include "mtb_string.c"
 #include "mtb_rng.c"
 
