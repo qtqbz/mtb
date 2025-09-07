@@ -72,19 +72,6 @@ struct mtb_segarr
 
 /* Segment Array API */
 
-#define _mtb_segarr_segment(i) \
-    (u64_lit(63) - mtb_leading_zeros_count((i >> MTB_SEGARR_SKIP_SEGMENTS) + u64_lit(1)))
-
-#define _mtb_segarr_segment_length(s) \
-    ((u64_lit(1) << MTB_SEGARR_SKIP_SEGMENTS) << (s))
-
-#define _mtb_segarr_segment_start(s) \
-    (_mtb_segarr_segment_length(s) - (u64_lit(1) << MTB_SEGARR_SKIP_SEGMENTS))
-
-#define _mtb_segarr_item(s, i) \
-    (i - _mtb_segarr_segment_start(s))
-
-
 public void mtb_segarr_init(MtbSegArr *array, MtbArena *arena, u64 itemSize);
 public void mtb_segarr_clear(MtbSegArr *array);
 public bool mtb_segarr_is_empty(MtbSegArr *array);

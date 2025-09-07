@@ -1,5 +1,14 @@
 #include "mtb_hmap.h"
 
+
+#define _mtb_hmap_threshold(capacity) ((capacity) - ((capacity) >> 2)) // 0.75 * capacity
+#define _mtb_hmap_modulo_capacity(hmap, n) ((n) & (hmap->capacity - 1))
+#define _mtb_hmap_entry(hmap, i) ((hmap)->entries + (i) * (hmap)->entrySize)
+#define _mtb_hmap_entry_header(hmap, i) ((MtbHmapEntryHeader *)_mtb_hmap_entry(hmap, i))
+#define _mtb_hmap_entry_key(hmap, i) (_mtb_hmap_entry(hmap, i) + (hmap)->headerSize)
+#define _mtb_hmap_entry_value(hmap, i) (_mtb_hmap_entry_key(hmap, i) + (hmap)->keySize)
+
+
 public void
 mtb_hmap_init_opt(MtbHmap *hmap,
                   MtbArena *arena,
@@ -66,20 +75,20 @@ mtb_hmap_grow(MtbHmap *hmap, u64 capacity)
     hmap->entries = mtb_arena_bump(hmap->arena, u8, hmap->capacity * hmap->entrySize);
 
     for (u64 oldIndex = 0; oldIndex < oldHmap.capacity; oldIndex++) {
-        MtbHmapEntryHeader *oldHeader = mtb_hmap_entry_header(&oldHmap, oldIndex);
+        MtbHmapEntryHeader *oldHeader = _mtb_hmap_entry_header(&oldHmap, oldIndex);
         if (!oldHeader->occupied || oldHeader->removed) {
             continue;
         }
-        u8 *oldKey = mtb_hmap_entry_key(&oldHmap, oldIndex);
+        u8 *oldKey = _mtb_hmap_entry_key(&oldHmap, oldIndex);
         u64 hash = hmap->key_hash(oldKey);
-        u64 index = mtb_hmap_modulo_capacity(hmap, hash);
-        MtbHmapEntryHeader *header = mtb_hmap_entry_header(hmap, index);
+        u64 index = _mtb_hmap_modulo_capacity(hmap, hash);
+        MtbHmapEntryHeader *header = _mtb_hmap_entry_header(hmap, index);
         while (header->occupied) {
-            index = mtb_hmap_modulo_capacity(hmap, index + 1);
-            header = mtb_hmap_entry_header(hmap, index);
+            index = _mtb_hmap_modulo_capacity(hmap, index + 1);
+            header = _mtb_hmap_entry_header(hmap, index);
         }
-        u8 *oldEntry = mtb_hmap_entry(&oldHmap, oldIndex);
-        u8 *entry = mtb_hmap_entry(hmap, index);
+        u8 *oldEntry = _mtb_hmap_entry(&oldHmap, oldIndex);
+        u8 *entry = _mtb_hmap_entry(hmap, index);
         memcpy(entry, oldEntry, hmap->entrySize);
         hmap->count++;
     }
@@ -88,40 +97,40 @@ mtb_hmap_grow(MtbHmap *hmap, u64 capacity)
 public void *
 mtb_hmap_put(MtbHmap *hmap, void *key)
 {
-    if (hmap->count >= mtb_hmap_threshold(hmap->capacity)) {
+    if (hmap->count >= _mtb_hmap_threshold(hmap->capacity)) {
         mtb_hmap_grow(hmap, hmap->capacity << 1);
     }
     u64 hash = hmap->key_hash(key);
-    u64 index = mtb_hmap_modulo_capacity(hmap, hash);
-    MtbHmapEntryHeader *header = mtb_hmap_entry_header(hmap, index);
+    u64 index = _mtb_hmap_modulo_capacity(hmap, hash);
+    MtbHmapEntryHeader *header = _mtb_hmap_entry_header(hmap, index);
     while (header->occupied && !header->removed) {
-        if (hmap->key_equals(mtb_hmap_entry_key(hmap, index), key)) {
-            return mtb_hmap_entry_value(hmap, index);
+        if (hmap->key_equals(_mtb_hmap_entry_key(hmap, index), key)) {
+            return _mtb_hmap_entry_value(hmap, index);
         }
-        index = mtb_hmap_modulo_capacity(hmap, index + 1);
-        header = mtb_hmap_entry_header(hmap, index);
+        index = _mtb_hmap_modulo_capacity(hmap, index + 1);
+        header = _mtb_hmap_entry_header(hmap, index);
     }
     header->occupied = true;
     header->removed = false;
-    memcpy(mtb_hmap_entry_key(hmap, index), key, hmap->keySize);
+    memcpy(_mtb_hmap_entry_key(hmap, index), key, hmap->keySize);
     hmap->count++;
-    return mtb_hmap_entry_value(hmap, index);
+    return _mtb_hmap_entry_value(hmap, index);
 }
 
 public void *
 mtb_hmap_remove(MtbHmap *hmap, void *key)
 {
     u64 hash = hmap->key_hash(key);
-    u64 index = mtb_hmap_modulo_capacity(hmap, hash);
-    MtbHmapEntryHeader *header = mtb_hmap_entry_header(hmap, index);
+    u64 index = _mtb_hmap_modulo_capacity(hmap, hash);
+    MtbHmapEntryHeader *header = _mtb_hmap_entry_header(hmap, index);
     while (header->occupied) {
-        if (!header->removed && hmap->key_equals(mtb_hmap_entry_key(hmap, index), key)) {
+        if (!header->removed && hmap->key_equals(_mtb_hmap_entry_key(hmap, index), key)) {
             header->removed = true;
             hmap->count--;
-            return mtb_hmap_entry_value(hmap, index);
+            return _mtb_hmap_entry_value(hmap, index);
         }
-        index = mtb_hmap_modulo_capacity(hmap, index + 1);
-        header = mtb_hmap_entry_header(hmap, index);
+        index = _mtb_hmap_modulo_capacity(hmap, index + 1);
+        header = _mtb_hmap_entry_header(hmap, index);
     }
     return nil;
 }
@@ -130,14 +139,14 @@ public void *
 mtb_hmap_get(MtbHmap *hmap, void *key)
 {
     u64 hash = hmap->key_hash(key);
-    u64 index = mtb_hmap_modulo_capacity(hmap, hash);
-    MtbHmapEntryHeader *header = mtb_hmap_entry_header(hmap, index);
+    u64 index = _mtb_hmap_modulo_capacity(hmap, hash);
+    MtbHmapEntryHeader *header = _mtb_hmap_entry_header(hmap, index);
     while (header->occupied) {
-        if (!header->removed && hmap->key_equals(mtb_hmap_entry_key(hmap, index), key)) {
-            return mtb_hmap_entry_value(hmap, index);
+        if (!header->removed && hmap->key_equals(_mtb_hmap_entry_key(hmap, index), key)) {
+            return _mtb_hmap_entry_value(hmap, index);
         }
-        index = mtb_hmap_modulo_capacity(hmap, index + 1);
-        header = mtb_hmap_entry_header(hmap, index);
+        index = _mtb_hmap_modulo_capacity(hmap, index + 1);
+        header = _mtb_hmap_entry_header(hmap, index);
     }
     return nil;
 }
@@ -168,10 +177,10 @@ is_equal_str(void *key1, void *key2)
 intern void
 test_mtb_hmap_calc_capacity(void)
 {
-    for (u64 i = 0; i <= mtb_hmap_threshold(MTB_HMAP_MIN_CAPACITY); i++) {
+    for (u64 i = 0; i <= _mtb_hmap_threshold(MTB_HMAP_MIN_CAPACITY); i++) {
         assert(mtb_hmap_calc_capacity(i) == MTB_HMAP_MIN_CAPACITY);
     }
-    assert(mtb_hmap_calc_capacity(mtb_hmap_threshold(MTB_HMAP_MIN_CAPACITY) + 1) == 32);
+    assert(mtb_hmap_calc_capacity(_mtb_hmap_threshold(MTB_HMAP_MIN_CAPACITY) + 1) == 32);
     assert(mtb_hmap_calc_capacity(MTB_HMAP_MIN_CAPACITY) == 32);
     assert(mtb_hmap_calc_capacity(45) == 64);
     assert(mtb_hmap_calc_capacity(100) == 256);

@@ -6,14 +6,9 @@
 #include "mtb_arena.h"
 
 
+#ifndef MTB_HMAP_MIN_CAPACITY
 #define MTB_HMAP_MIN_CAPACITY 16
-
-#define mtb_hmap_threshold(capacity) ((capacity) - ((capacity) >> 2)) // 0.75 * capacity
-#define mtb_hmap_modulo_capacity(hmap, n) ((n) & (hmap->capacity - 1))
-#define mtb_hmap_entry(hmap, i) ((hmap)->entries + (i) * (hmap)->entrySize)
-#define mtb_hmap_entry_header(hmap, i) ((MtbHmapEntryHeader *)mtb_hmap_entry(hmap, i))
-#define mtb_hmap_entry_key(hmap, i) (mtb_hmap_entry(hmap, i) + (hmap)->headerSize)
-#define mtb_hmap_entry_value(hmap, i) (mtb_hmap_entry_key(hmap, i) + (hmap)->keySize)
+#endif
 
 
 typedef struct mtb_hmap_entry_header MtbHmapEntryHeader;
