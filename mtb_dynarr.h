@@ -52,4 +52,20 @@ public void *mtb_dynarr_deq(MtbDynArr *array);
 public void *mtb_dynarr_front(MtbDynArr *array);
 
 
+/* Iterator API */
+
+typedef struct mtb_dynarr_iter MtbDynArrIter;
+struct mtb_dynarr_iter
+{
+    MtbDynArr *array;
+    u64 index;
+};
+
+
+public void mtb_dynarr_iter_init(MtbDynArrIter *it, MtbDynArr *array);
+public void mtb_dynarr_iter_reset(MtbDynArrIter *it);
+public bool mtb_dynarr_iter_has_next(MtbDynArrIter *it);
+public void *mtb_dynarr_iter_next(MtbDynArrIter *it);
+
+
 #endif //MTB_MTB_DYNARR_H

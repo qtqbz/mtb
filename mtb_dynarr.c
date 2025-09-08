@@ -141,6 +141,31 @@ mtb_dynarr_front(MtbDynArr *array)
     return mtb_dynarr_get(array, array->length - 1);
 }
 
+public void
+mtb_dynarr_iter_init(MtbDynArrIter *it, MtbDynArr *array)
+{
+    it->array = array;
+    mtb_dynarr_iter_reset(it);
+}
+
+public void
+mtb_dynarr_iter_reset(MtbDynArrIter *it)
+{
+    it->index = 0;
+}
+
+public bool
+mtb_dynarr_iter_has_next(MtbDynArrIter *it)
+{
+    return it->index < it->array->length;
+}
+
+public void *
+mtb_dynarr_iter_next(MtbDynArrIter *it)
+{
+    return mtb_dynarr_get(it->array, it->index++);
+}
+
 
 #ifdef MTB_DYNARR_TESTS
 
@@ -291,6 +316,31 @@ test_mtb_dynarr_queue(MtbArena arena)
 }
 
 intern void
+test_mtb_dynarr_iter(MtbArena arena)
+{
+    MtbDynArr array = {0};
+    mtb_dynarr_init(&array, &arena, sizeof(u32));
+    assert(mtb_dynarr_is_empty(&array));
+
+    MtbDynArrIter it = {0};
+    mtb_dynarr_iter_init(&it, &array);
+    assert(!mtb_dynarr_iter_has_next(&it));
+
+    u32 n = 10;
+    for (u32 i = 0; i < n; i++) {
+        *(u32 *)mtb_dynarr_push(&array) = i;
+    }
+
+    mtb_dynarr_iter_reset(&it);
+    assert(mtb_dynarr_iter_has_next(&it));
+
+    u32 i = 0;
+    while (mtb_dynarr_iter_has_next(&it)) {
+        assert(*(u32 *)mtb_dynarr_iter_next(&it) == i++);
+    }
+}
+
+intern void
 test_mtb_dynarr(void)
 {
     MtbArena arena = {0};
@@ -301,6 +351,7 @@ test_mtb_dynarr(void)
     test_mtb_dynarr_grow(arena);
     test_mtb_dynarr_stack(arena);
     test_mtb_dynarr_queue(arena);
+    test_mtb_dynarr_iter(arena);
 
     mtb_arena_deinit(&arena);
 }
