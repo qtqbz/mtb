@@ -89,4 +89,20 @@ public void *mtb_segarr_push(MtbSegArr *array);
 public void *mtb_segarr_pop(MtbSegArr *array);
 public void *mtb_segarr_top(MtbSegArr *array);
 
+
+/* Iterator API */
+
+typedef struct mtb_segarr_iter MtbSegArrIter;
+struct mtb_segarr_iter
+{
+    MtbSegArr *array;
+    u64 index;
+};
+
+
+public void mtb_segarr_iter_init(MtbSegArrIter *it, MtbSegArr *array);
+public void mtb_segarr_iter_reset(MtbSegArrIter *it);
+public bool mtb_segarr_iter_has_next(MtbSegArrIter *it);
+public void *mtb_segarr_iter_next(MtbSegArrIter *it);
+
 #endif //MTB_MTB_SEGARR_H
