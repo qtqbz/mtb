@@ -10,12 +10,17 @@
 #define MTB_HMAP_MIN_CAPACITY 16
 #endif
 
+#define mtb_hmap_entry(hmap, index) ((hmap)->entries + (index) * (hmap)->entrySize)
+#define mtb_hmap_entry_key(hmap, entry) ((entry) + (hmap)->headerSize)
+#define mtb_hmap_entry_value(hmap, entry) (mtb_hmap_entry_key(hmap, entry) + (hmap)->keySize)
 
-typedef struct mtb_hmap_entry_header MtbHmapEntryHeader;
-struct mtb_hmap_entry_header
+
+typedef u8 MtbHmapEntryStatus;
+enum
 {
-    bool occupied : 1;
-    bool removed : 1;
+    MTB_HMAP_ENTRY_FREE = 0,
+    MTB_HMAP_ENTRY_OCCUPIED = 1,
+    MTB_HMAP_ENTRY_REMOVED = 2,
 };
 
 typedef struct mtb_hmap MtbHmap;
@@ -72,5 +77,25 @@ public u64 mtb_hmap_calc_capacity(u64 n);
 public void *mtb_hmap_put(MtbHmap *hmap, void *key);
 public void *mtb_hmap_remove(MtbHmap *hmap, void *key);
 public void *mtb_hmap_get(MtbHmap *hmap, void *key);
+
+
+/* Iterator API */
+
+typedef struct mtb_hmap_iter MtbHmapIter;
+struct mtb_hmap_iter
+{
+    MtbHmap *hmap;
+    u8 *prev;
+    u8 *next;
+};
+
+
+public void mtb_hmap_iter_init(MtbHmapIter *it, MtbHmap *hmap);
+public void mtb_hmap_iter_reset(MtbHmapIter *it);
+public bool mtb_hmap_iter_has_next(MtbHmapIter *it);
+public void *mtb_hmap_iter_next(MtbHmapIter *it);
+public void *mtb_hmap_iter_next_key(MtbHmapIter *it);
+public void *mtb_hmap_iter_next_value(MtbHmapIter *it);
+public void *mtb_hmap_iter_remove(MtbHmapIter *it);
 
 #endif //MTB_HMAP_H

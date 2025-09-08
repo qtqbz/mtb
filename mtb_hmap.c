@@ -3,10 +3,7 @@
 
 #define _mtb_hmap_threshold(capacity) ((capacity) - ((capacity) >> 2)) // 0.75 * capacity
 #define _mtb_hmap_modulo_capacity(hmap, n) ((n) & (hmap->capacity - 1))
-#define _mtb_hmap_entry(hmap, i) ((hmap)->entries + (i) * (hmap)->entrySize)
-#define _mtb_hmap_entry_header(hmap, i) ((MtbHmapEntryHeader *)_mtb_hmap_entry(hmap, i))
-#define _mtb_hmap_entry_key(hmap, i) (_mtb_hmap_entry(hmap, i) + (hmap)->headerSize)
-#define _mtb_hmap_entry_value(hmap, i) (_mtb_hmap_entry_key(hmap, i) + (hmap)->keySize)
+#define _mtb_hmap_entry_status(entry) ((MtbHmapEntryStatus *)entry)
 
 
 public void
@@ -27,8 +24,8 @@ mtb_hmap_init_opt(MtbHmap *hmap,
     hmap->capacity = opt.capacity < MTB_HMAP_MIN_CAPACITY ? MTB_HMAP_MIN_CAPACITY : opt.capacity;
     hmap->count = 0;
 
-    u64 align = mtb_max_u64(mtb_alignof(MtbHmapEntryHeader), mtb_max_u64(opt.keyAlign, opt.valueAlign));
-    hmap->headerSize = mtb_align_pow2(sizeof(MtbHmapEntryHeader), align);
+    u64 align = mtb_max_u64(mtb_alignof(MtbHmapEntryStatus), mtb_max_u64(opt.keyAlign, opt.valueAlign));
+    hmap->headerSize = mtb_align_pow2(sizeof(MtbHmapEntryStatus), align);
     hmap->keySize = mtb_align_pow2(keySize, align);
     hmap->valueSize = mtb_align_pow2(valueSize, align);
     hmap->entrySize = hmap->headerSize + hmap->keySize + hmap->valueSize;
@@ -75,20 +72,17 @@ mtb_hmap_grow(MtbHmap *hmap, u64 capacity)
     hmap->entries = mtb_arena_bump(hmap->arena, u8, hmap->capacity * hmap->entrySize);
 
     for (u64 oldIndex = 0; oldIndex < oldHmap.capacity; oldIndex++) {
-        MtbHmapEntryHeader *oldHeader = _mtb_hmap_entry_header(&oldHmap, oldIndex);
-        if (!oldHeader->occupied || oldHeader->removed) {
+        u8 *oldEntry = mtb_hmap_entry(&oldHmap, oldIndex);
+        if (*_mtb_hmap_entry_status(oldEntry) != MTB_HMAP_ENTRY_OCCUPIED) {
             continue;
         }
-        u8 *oldKey = _mtb_hmap_entry_key(&oldHmap, oldIndex);
-        u64 hash = hmap->key_hash(oldKey);
+        u64 hash = hmap->key_hash(mtb_hmap_entry_key(&oldHmap, oldEntry));
         u64 index = _mtb_hmap_modulo_capacity(hmap, hash);
-        MtbHmapEntryHeader *header = _mtb_hmap_entry_header(hmap, index);
-        while (header->occupied) {
+        u8 *entry = mtb_hmap_entry(hmap, index);
+        while (*_mtb_hmap_entry_status(entry) == MTB_HMAP_ENTRY_OCCUPIED) {
             index = _mtb_hmap_modulo_capacity(hmap, index + 1);
-            header = _mtb_hmap_entry_header(hmap, index);
+            entry = mtb_hmap_entry(hmap, index);
         }
-        u8 *oldEntry = _mtb_hmap_entry(&oldHmap, oldIndex);
-        u8 *entry = _mtb_hmap_entry(hmap, index);
         memcpy(entry, oldEntry, hmap->entrySize);
         hmap->count++;
     }
@@ -102,19 +96,18 @@ mtb_hmap_put(MtbHmap *hmap, void *key)
     }
     u64 hash = hmap->key_hash(key);
     u64 index = _mtb_hmap_modulo_capacity(hmap, hash);
-    MtbHmapEntryHeader *header = _mtb_hmap_entry_header(hmap, index);
-    while (header->occupied && !header->removed) {
-        if (hmap->key_equals(_mtb_hmap_entry_key(hmap, index), key)) {
-            return _mtb_hmap_entry_value(hmap, index);
+    u8 *entry = mtb_hmap_entry(hmap, index);
+    while (*_mtb_hmap_entry_status(entry) == MTB_HMAP_ENTRY_OCCUPIED) {
+        if (hmap->key_equals(mtb_hmap_entry_key(hmap, entry), key)) {
+            return mtb_hmap_entry_value(hmap, entry);
         }
         index = _mtb_hmap_modulo_capacity(hmap, index + 1);
-        header = _mtb_hmap_entry_header(hmap, index);
+        entry = mtb_hmap_entry(hmap, index);
     }
-    header->occupied = true;
-    header->removed = false;
-    memcpy(_mtb_hmap_entry_key(hmap, index), key, hmap->keySize);
+    *_mtb_hmap_entry_status(entry) = MTB_HMAP_ENTRY_OCCUPIED;
+    memcpy(mtb_hmap_entry_key(hmap, entry), key, hmap->keySize);
     hmap->count++;
-    return _mtb_hmap_entry_value(hmap, index);
+    return mtb_hmap_entry_value(hmap, entry);
 }
 
 public void *
@@ -122,15 +115,17 @@ mtb_hmap_remove(MtbHmap *hmap, void *key)
 {
     u64 hash = hmap->key_hash(key);
     u64 index = _mtb_hmap_modulo_capacity(hmap, hash);
-    MtbHmapEntryHeader *header = _mtb_hmap_entry_header(hmap, index);
-    while (header->occupied) {
-        if (!header->removed && hmap->key_equals(_mtb_hmap_entry_key(hmap, index), key)) {
-            header->removed = true;
-            hmap->count--;
-            return _mtb_hmap_entry_value(hmap, index);
+    u8 *entry = mtb_hmap_entry(hmap, index);
+    while (*_mtb_hmap_entry_status(entry) != MTB_HMAP_ENTRY_FREE) {
+        if (*_mtb_hmap_entry_status(entry) != MTB_HMAP_ENTRY_REMOVED) {
+            if (hmap->key_equals(mtb_hmap_entry_key(hmap, entry), key)) {
+                *_mtb_hmap_entry_status(entry) = MTB_HMAP_ENTRY_REMOVED;
+                hmap->count--;
+                return mtb_hmap_entry_value(hmap, entry);
+            }
         }
         index = _mtb_hmap_modulo_capacity(hmap, index + 1);
-        header = _mtb_hmap_entry_header(hmap, index);
+        entry = mtb_hmap_entry(hmap, index);
     }
     return nil;
 }
@@ -140,15 +135,76 @@ mtb_hmap_get(MtbHmap *hmap, void *key)
 {
     u64 hash = hmap->key_hash(key);
     u64 index = _mtb_hmap_modulo_capacity(hmap, hash);
-    MtbHmapEntryHeader *header = _mtb_hmap_entry_header(hmap, index);
-    while (header->occupied) {
-        if (!header->removed && hmap->key_equals(_mtb_hmap_entry_key(hmap, index), key)) {
-            return _mtb_hmap_entry_value(hmap, index);
+    u8 *entry = mtb_hmap_entry(hmap, index);
+    while (*_mtb_hmap_entry_status(entry) != MTB_HMAP_ENTRY_FREE) {
+        if (*_mtb_hmap_entry_status(entry) != MTB_HMAP_ENTRY_REMOVED) {
+            if (hmap->key_equals(mtb_hmap_entry_key(hmap, entry), key)) {
+                return mtb_hmap_entry_value(hmap, entry);
+            }
         }
         index = _mtb_hmap_modulo_capacity(hmap, index + 1);
-        header = _mtb_hmap_entry_header(hmap, index);
+        entry = mtb_hmap_entry(hmap, index);
     }
     return nil;
+}
+
+public void
+mtb_hmap_iter_init(MtbHmapIter *it, MtbHmap *hmap)
+{
+    it->hmap = hmap;
+    mtb_hmap_iter_reset(it);
+}
+
+public void
+mtb_hmap_iter_reset(MtbHmapIter *it)
+{
+    it->prev = nil;
+    it->next = nil;
+}
+
+public bool
+mtb_hmap_iter_has_next(MtbHmapIter *it)
+{
+    u8 *next = it->prev == nil ? it->hmap->entries : it->prev + it->hmap->entrySize;
+    u8 *end = it->hmap->entries + it->hmap->capacity * it->hmap->entrySize;
+    while (next < end) {
+        if (*_mtb_hmap_entry_status(next) == MTB_HMAP_ENTRY_OCCUPIED) {
+            it->next = next;
+            return true;
+        }
+        next += it->hmap->entrySize;
+    }
+    return false;
+}
+
+public void *
+mtb_hmap_iter_next(MtbHmapIter *it)
+{
+    mtb_assert_always(it->next != nil);
+    it->prev = it->next;
+    it->next = nil;
+    return it->prev;
+}
+
+public void *
+mtb_hmap_iter_next_key(MtbHmapIter *it)
+{
+    return mtb_hmap_entry_key(it->hmap, mtb_hmap_iter_next(it));
+}
+
+public void *
+mtb_hmap_iter_next_value(MtbHmapIter *it)
+{
+    return mtb_hmap_entry_value(it->hmap, mtb_hmap_iter_next(it));
+}
+
+public void *
+mtb_hmap_iter_remove(MtbHmapIter *it)
+{
+    mtb_assert_always(it->prev != nil);
+    *_mtb_hmap_entry_status(it->prev) = MTB_HMAP_ENTRY_REMOVED;
+    it->hmap->count--;
+    return it->prev;
 }
 
 
@@ -156,6 +212,7 @@ mtb_hmap_get(MtbHmap *hmap, void *key)
 
 #include <assert.h>
 #include <string.h>
+
 
 intern u64
 calc_hash_str(void *key)
@@ -515,6 +572,9 @@ test_mtb_hmap_put(MtbArena arena)
         struct histogram *wc = hist + i;
         assert(*(u64 *)mtb_hmap_get(&hmap, &wc->word) == wc->count);
     }
+
+    mtb_hmap_clear(&hmap);
+    assert(mtb_hmap_is_empty(&hmap));
 }
 
 intern void
@@ -528,13 +588,86 @@ test_mtb_hmap_remove(MtbArena arena)
 
     assert(mtb_hmap_remove(&hmap, &k1) == nil);
 
-    *(u64 *)mtb_hmap_put(&hmap, &k1) = v1;
-    assert(*(u64 *)mtb_hmap_remove(&hmap, &k1) == v1);
-    assert(mtb_hmap_remove(&hmap, &k1) == nil);
+    for (int i = 0; i < 5; i++) {
+        *(u64 *)mtb_hmap_put(&hmap, &k1) = v1;
+        assert(*(u64 *)mtb_hmap_remove(&hmap, &k1) == v1);
+        assert(mtb_hmap_remove(&hmap, &k1) == nil);
+    }
 
-    *(u64 *)mtb_hmap_put(&hmap, &k1) = v1;
-    assert(*(u64 *)mtb_hmap_remove(&hmap, &k1) == v1);
-    assert(mtb_hmap_remove(&hmap, &k1) == nil);
+    assert(mtb_hmap_is_empty(&hmap));
+}
+
+intern void
+test_mtb_hmap_iter(MtbArena arena)
+{
+    MtbHmap hmap = {0};
+    mtb_hmap_init(&hmap, &arena, sizeof(char *), sizeof(u64), calc_hash_str, is_equal_str);
+
+    MtbHmapIter it = {0};
+    mtb_hmap_iter_init(&it, &hmap);
+
+    assert(!mtb_hmap_iter_has_next(&it));
+
+    struct {
+        char *letter;
+        u64 order;
+    } alphabet[] = {
+        { .letter = "a", .order = 0 },
+        { .letter = "b", .order = 1 },
+        { .letter = "c", .order = 2 },
+        { .letter = "d", .order = 3 },
+        { .letter = "e", .order = 4 },
+        { .letter = "f", .order = 5 },
+        { .letter = "g", .order = 6 },
+        { .letter = "h", .order = 7 },
+        { .letter = "i", .order = 8 },
+        { .letter = "j", .order = 9 },
+        { .letter = "k", .order = 10 },
+        { .letter = "l", .order = 11 },
+        { .letter = "m", .order = 12 },
+        { .letter = "n", .order = 13 },
+        { .letter = "o", .order = 14 },
+        { .letter = "p", .order = 15 },
+        { .letter = "q", .order = 16 },
+        { .letter = "r", .order = 17 },
+        { .letter = "s", .order = 18 },
+        { .letter = "t", .order = 19 },
+        { .letter = "u", .order = 20 },
+        { .letter = "v", .order = 21 },
+        { .letter = "w", .order = 22 },
+        { .letter = "x", .order = 23 },
+        { .letter = "y", .order = 24 },
+        { .letter = "z", .order = 25 },
+    };
+
+    char *removed[] = { "k", "o", "t", "e", "n" };
+
+    for (u64 i = 0; i < mtb_countof(alphabet); i++) {
+        *(u64 *)mtb_hmap_put(&hmap, &alphabet[i].letter) = alphabet[i].order;
+    }
+
+    mtb_hmap_iter_reset(&it);
+    while (mtb_hmap_iter_has_next(&it)) {
+        char *key = *(char **)mtb_hmap_iter_next_key(&it);
+        for (u64 i = 0; i < mtb_countof(removed); i++) {
+            if (strcmp(key, removed[i]) == 0) {
+                mtb_hmap_iter_remove(&it);
+            }
+        }
+    }
+    for (u64 i = 0; i < mtb_countof(removed); i++) {
+        assert(mtb_hmap_get(&hmap, &removed[i]) == nil);
+    }
+
+    mtb_hmap_iter_reset(&it);
+    while (mtb_hmap_iter_has_next(&it)) {
+        mtb_hmap_iter_next(&it);
+        mtb_hmap_iter_remove(&it);
+    }
+    assert(mtb_hmap_is_empty(&hmap));
+
+    mtb_hmap_iter_reset(&it);
+    assert(!mtb_hmap_iter_has_next(&it));
 }
 
 intern void
@@ -546,6 +679,7 @@ test_mtb_hmap(void)
     test_mtb_hmap_put(arena);
     test_mtb_hmap_remove(arena);
     test_mtb_hmap_calc_capacity();
+    test_mtb_hmap_iter(arena);
 
     mtb_arena_deinit(&arena);
 }
