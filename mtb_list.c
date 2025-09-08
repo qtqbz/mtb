@@ -3,33 +3,33 @@
 
 
 public void
-mtb_list_init(MtbListNode *head)
+mtb_list_init(MtbList *head)
 {
     head->next = head->prev = head;
 }
 
 public void
-mtb_list_reset(MtbListNode *head)
+mtb_list_reset(MtbList *head)
 {
     mtb_list_init(head);
 }
 
 public bool
-mtb_list_is_empty(MtbListNode *head)
+mtb_list_is_empty(MtbList *head)
 {
     return head->next == head;
 }
 
-public MtbListNode *
-mtb_list_remove(MtbListNode *item)
+public MtbList *
+mtb_list_remove(MtbList *item)
 {
     item->prev->next = item->next;
     item->next->prev = item->prev;
     return item;
 }
 
-public MtbListNode *
-mtb_list_insert_before(MtbListNode *pivot, MtbListNode *item)
+public MtbList *
+mtb_list_insert_before(MtbList *pivot, MtbList *item)
 {
     item->prev = pivot->prev;
     item->next = pivot;
@@ -38,82 +38,119 @@ mtb_list_insert_before(MtbListNode *pivot, MtbListNode *item)
     return item;
 }
 
-public MtbListNode *
-mtb_list_insert_after(MtbListNode *pivot, MtbListNode *item)
+public MtbList *
+mtb_list_insert_after(MtbList *pivot, MtbList *item)
 {
     return mtb_list_insert_before(pivot->next, item);
 }
 
-public MtbListNode *
-mtb_list_add_last(MtbListNode *head, MtbListNode *item)
+public MtbList *
+mtb_list_add_last(MtbList *head, MtbList *item)
 {
     return mtb_list_insert_before(head, item);
 }
 
-public MtbListNode *
-mtb_list_remove_last(MtbListNode *head)
+public MtbList *
+mtb_list_remove_last(MtbList *head)
 {
     return mtb_list_is_empty(head) ? nil : mtb_list_remove(head->prev);
 }
 
-public MtbListNode *
-mtb_list_get_last(MtbListNode *head)
+public MtbList *
+mtb_list_get_last(MtbList *head)
 {
     return mtb_list_is_empty(head) ? nil : head->prev;
 }
 
-public MtbListNode *
-mtb_list_add_first(MtbListNode *head, MtbListNode *item)
+public MtbList *
+mtb_list_add_first(MtbList *head, MtbList *item)
 {
     return mtb_list_insert_after(head, item);
 }
 
-public MtbListNode *
-mtb_list_remove_first(MtbListNode *head)
+public MtbList *
+mtb_list_remove_first(MtbList *head)
 {
     return mtb_list_is_empty(head) ? nil : mtb_list_remove(head->next);
 }
 
-public MtbListNode *
-mtb_list_get_first(MtbListNode *head)
+public MtbList *
+mtb_list_get_first(MtbList *head)
 {
     return mtb_list_is_empty(head) ? nil : head->next;
 }
 
-public MtbListNode *
-mtb_list_push(MtbListNode *head, MtbListNode *item)
+public MtbList *
+mtb_list_push(MtbList *head, MtbList *item)
 {
     return mtb_list_add_last(head, item);
 }
 
-public MtbListNode *
-mtb_list_pop(MtbListNode *head)
+public MtbList *
+mtb_list_pop(MtbList *head)
 {
     return mtb_list_remove_last(head);
 }
 
-public MtbListNode *
-mtb_list_top(MtbListNode *head)
+public MtbList *
+mtb_list_top(MtbList *head)
 {
     return mtb_list_get_last(head);
 }
 
-public MtbListNode *
-mtb_list_enq(MtbListNode *head, MtbListNode *item)
+public MtbList *
+mtb_list_enq(MtbList *head, MtbList *item)
 {
     return mtb_list_add_last(head, item);
 }
 
-public MtbListNode *
-mtb_list_deq(MtbListNode *head)
+public MtbList *
+mtb_list_deq(MtbList *head)
 {
     return mtb_list_remove_first(head);
 }
 
-public MtbListNode *
-mtb_list_front(MtbListNode *head)
+public MtbList *
+mtb_list_front(MtbList *head)
 {
     return mtb_list_get_first(head);
+}
+
+public void
+mtb_list_iter_init(MtbListIter *it, MtbList *head)
+{
+    it->head = head;
+    mtb_list_iter_reset(it);
+}
+
+public void
+mtb_list_iter_reset(MtbListIter *it)
+{
+    it->prev = it->head;
+    it->next = nil;
+}
+
+public bool
+mtb_list_iter_has_next(MtbListIter *it)
+{
+    it->next = it->prev->next;
+    return it->next != it->head;
+}
+
+public void *
+mtb_list_iter_next(MtbListIter *it)
+{
+    mtb_assert_always(it->next != nil);
+    it->prev = it->next;
+    it->next = nil;
+    return it->prev;
+}
+
+public void *
+mtb_list_iter_remove(MtbListIter *it)
+{
+    mtb_assert_always(it->prev != it->head);
+    return mtb_list_remove(it->prev);
 }
 
 
@@ -125,10 +162,10 @@ mtb_list_front(MtbListNode *head)
 intern void
 test_mtb_list_list(void)
 {
-    MtbListNode list = {0};
-    MtbListNode first = {0};
-    MtbListNode last = {0};
-    MtbListNode *expOrder[] = {&first, &last};
+    MtbList list = {0};
+    MtbList first = {0};
+    MtbList last = {0};
+    MtbList *expOrder[] = {&first, &last};
 
     mtb_list_init(&list);
     assert(mtb_list_is_empty(&list));
@@ -139,7 +176,7 @@ test_mtb_list_list(void)
 
     u32 i = 0;
     mtb_list_foreach(&list, item) {
-        MtbListNode *expItem = expOrder[i++];
+        MtbList *expItem = expOrder[i++];
         assert(item == expItem);
     }
 
@@ -153,11 +190,11 @@ test_mtb_list_list(void)
 intern void
 test_mtb_list_stack(void)
 {
-    MtbListNode stack = {0};
-    MtbListNode itemA = {0};
-    MtbListNode itemB = {0};
-    MtbListNode itemC = {0};
-    MtbListNode *expOrder[] = {&itemA, &itemB, &itemC};
+    MtbList stack = {0};
+    MtbList itemA = {0};
+    MtbList itemB = {0};
+    MtbList itemC = {0};
+    MtbList *expOrder[] = {&itemA, &itemB, &itemC};
 
     mtb_list_init(&stack);
     assert(mtb_list_is_empty(&stack));
@@ -169,7 +206,7 @@ test_mtb_list_stack(void)
 
     u32 i = 0;
     mtb_list_foreach(&stack, item) {
-        MtbListNode *expItem = expOrder[i++];
+        MtbList *expItem = expOrder[i++];
         assert(item == expItem);
     }
 
@@ -185,11 +222,11 @@ test_mtb_list_stack(void)
 intern void
 test_mtb_list_queue(void)
 {
-    MtbListNode queue = {0};
-    MtbListNode itemA = {0};
-    MtbListNode itemB = {0};
-    MtbListNode itemC = {0};
-    MtbListNode *expOrder[] = {&itemA, &itemB, &itemC};
+    MtbList queue = {0};
+    MtbList itemA = {0};
+    MtbList itemB = {0};
+    MtbList itemC = {0};
+    MtbList *expOrder[] = {&itemA, &itemB, &itemC};
 
     mtb_list_init(&queue);
     assert(mtb_list_is_empty(&queue));
@@ -201,7 +238,7 @@ test_mtb_list_queue(void)
 
     u32 i = 0;
     mtb_list_foreach(&queue, item) {
-        MtbListNode *expItem = expOrder[i++];
+        MtbList *expItem = expOrder[i++];
         assert(item == expItem);
     }
 
@@ -215,11 +252,48 @@ test_mtb_list_queue(void)
 }
 
 intern void
+test_mtb_list_iter(void)
+{
+    MtbList list = {0};
+    MtbList itemA = {0};
+    MtbList itemB = {0};
+    MtbList itemC = {0};
+    MtbList *expOrder[] = {&itemA, &itemB, &itemC};
+
+    mtb_list_init(&list);
+    assert(mtb_list_is_empty(&list));
+
+    MtbListIter it = {0};
+    mtb_list_iter_init(&it, &list);
+    assert(!mtb_list_iter_has_next(&it));
+
+    mtb_list_add_last(&list, &itemA);
+    mtb_list_add_last(&list, &itemB);
+    mtb_list_add_last(&list, &itemC);
+    assert(!mtb_list_is_empty(&list));
+
+    mtb_list_iter_reset(&it);
+    assert(mtb_list_iter_has_next(&it));
+
+    u32 i = 0;
+    while (mtb_list_iter_has_next(&it)) {
+        MtbList *expItem = expOrder[i++];
+        assert(mtb_list_iter_next(&it) == expItem);
+        assert(mtb_list_iter_remove(&it) == expItem);
+    }
+
+    mtb_list_iter_reset(&it);
+    assert(!mtb_list_iter_has_next(&it));
+    assert(mtb_list_is_empty(&list));
+}
+
+intern void
 test_mtb_list(void)
 {
     test_mtb_list_list();
     test_mtb_list_stack();
     test_mtb_list_queue();
+    test_mtb_list_iter();
 }
 
 #endif // MTB_LIST_TESTS

@@ -108,7 +108,7 @@ public bool mtb_str_is_empty(MtbStr str);
 typedef struct mtb_str_list MtbStrList;
 struct mtb_str_list
 {
-    MtbListNode node;
+    MtbList node;
     union {
         MtbArena *arena;
         MtbStr *str;
