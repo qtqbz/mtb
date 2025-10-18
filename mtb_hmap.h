@@ -11,6 +11,7 @@
 #endif
 
 #define mtb_hmap_entry(hmap, index) ((hmap)->entries + (index) * (hmap)->entrySize)
+#define mtb_hmap_entry_header(hmap, entry) ((MtbHmapHeader *)(entry))
 #define mtb_hmap_entry_key(hmap, entry) ((entry) + (hmap)->headerSize)
 #define mtb_hmap_entry_value(hmap, entry) (mtb_hmap_entry_key(hmap, entry) + (hmap)->keySize)
 
@@ -21,6 +22,12 @@ enum
     MTB_HMAP_ENTRY_FREE = 0,
     MTB_HMAP_ENTRY_OCCUPIED = 1,
     MTB_HMAP_ENTRY_REMOVED = 2,
+};
+
+typedef struct mtb_hmap_header MtbHmapHeader;
+struct mtb_hmap_header
+{
+    MtbHmapEntryStatus status;
 };
 
 typedef struct mtb_hmap MtbHmap;
