@@ -19,11 +19,7 @@
 
 #define intern static
 #define global static __attribute__((unused))
-#ifndef MTB_NOSTU
-#define public intern
-#elif
 #define public
-#endif
 
 #define nil ((void *)0)
 
