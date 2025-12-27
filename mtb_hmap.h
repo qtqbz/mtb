@@ -792,3 +792,106 @@ test_mtb_hmap(void)
 }
 
 #endif // MTB_HMAP_TESTS
+
+
+#ifdef MTB_HMAP_BENCH
+
+#include <assert.h>
+#include <stdio.h>
+#include <x86intrin.h>
+#include <string.h>
+
+
+intern u64
+calc_hash_str(void *key)
+{
+    char *s = *(char **)key;
+    u64 hash = 0;
+    while (*s != '\0') hash = 17000069 * hash + *s++;
+    return hash;
+}
+
+intern bool
+is_equal_str(void *key1, void *key2)
+{
+    char *s1 = *(char **)key1;
+    char *s2 = *(char **)key2;
+    return strcmp(s1, s2) == 0;
+}
+
+intern void
+bench_mtb_hmap(void)
+{
+    FILE *inputFile = fopen("data/shakespeare.txt", "r");
+    fseek(inputFile, 0L, SEEK_END);
+    u64 inputFileSize = ftell(inputFile);
+    fseek(inputFile, 0L, SEEK_SET);
+
+    MtbArena arena = {0};
+    mtb_arena_init(&arena, inputFileSize * 10, &MTB_ARENA_DEF_ALLOCATOR);
+
+    char *inputData = mtb_arena_bump(&arena, char, inputFileSize + 1);
+    if (fread(inputData, sizeof(char), inputFileSize, inputFile) != inputFileSize) {
+        fprintf(stderr, "fread() failed\n");
+        exit(1);
+    }
+    fclose(inputFile);
+
+    MtbDynArr tokens = {0};
+    mtb_dynarr_init(&tokens, &arena, sizeof(char *));
+    char *token = strtok(inputData, " \t\r\n");
+    while (token != nil) {
+        *(char **)mtb_dynarr_push(&tokens) = token;
+        token = strtok(nil, " \n");
+    }
+
+    f64 avgDuration = 0;
+    i32 iterationCount = 1000;
+    for (i32 i = 0; i < iterationCount; i++) {
+        MtbArena arenaTmp = arena;
+
+        MtbHmap hmap = {0};
+        mtb_hmap_init(&hmap, &arenaTmp, char *, u64, calc_hash_str, is_equal_str);
+
+        MtbDynArrIter tokensIterator = {0};
+        mtb_dynarr_iter_init(&tokensIterator, &tokens);
+
+        u64 start = __rdtsc();
+
+        while (mtb_dynarr_iter_has_next(&tokensIterator)) {
+            char *token = *(char **)mtb_dynarr_iter_next(&tokensIterator);
+            u64 *count = mtb_hmap_get(&hmap, &token);
+            if (count == nil) {
+                *(u64 *)mtb_hmap_put(&hmap, &token) = 1;
+            }
+            else {
+                *count += 1;
+            }
+        }
+
+        u64 end = __rdtsc();
+        u64 duration = end - start;
+        avgDuration = ((f64)duration - avgDuration) / (f64)(i + 1);
+
+        // sanity check
+        struct histogram {
+            char *word;
+            u64 count;
+        } hist[] = {
+            { .word = "god", .count = 62 },
+            { .word = "dog", .count = 60 },
+            { .word = "duck", .count = 2 },
+            { .word = "poop", .count = 1 },
+            { .word = "love", .count = 1364 },
+        };
+        for (u64 i = 0; i < mtb_countof(hist); i++) {
+            struct histogram *wc = hist + i;
+            assert(*(u64 *)mtb_hmap_get(&hmap, &wc->word) == wc->count);
+        }
+    }
+    printf("iterationCount: %d, avgDuration: %.3f ticks\n", iterationCount, avgDuration);
+
+    mtb_arena_deinit(&arena);
+}
+
+#endif // MTB_HMAP_BENCH

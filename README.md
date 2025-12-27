@@ -22,6 +22,7 @@ This is a collection of reusable C utils.
 - [mtb_string.h](./mtb_string.h) - strings with partial UTF-8 support.
 - [mtb_rng.h](./mtb_rng.h) - simple & fast non-cryptographic pseudo-RNGs.
 - [tests.h](./tests.c) - runs all unit tests.
+- [bench.h](./bench.c) - runs all benchmarks.
 
 
 ### Heavily inspired by
