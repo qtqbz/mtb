@@ -219,59 +219,59 @@ global f64 F64_MIN = DBL_MIN;
 #define mtb_cast_char_u8(a) _mtb_cast_min(a, char, u8,   0,             mtb_id(_a))
 #define mtb_cast_u8_char(a) _mtb_cast_max(a, u8,   char, (u8)CHAR_MAX , mtb_id(_a))
 
-public bool mtb_char_is_lower(char c);
-public bool mtb_char_is_upper(char c);
-public bool mtb_char_is_alpha(char c);
-public bool mtb_char_is_alnum(char c);
-public bool mtb_char_is_space(char c);
-public bool mtb_char_is_digit(char c);
-public bool mtb_char_is_xdigit(char c);
+func bool mtb_char_is_lower(char c);
+func bool mtb_char_is_upper(char c);
+func bool mtb_char_is_alpha(char c);
+func bool mtb_char_is_alnum(char c);
+func bool mtb_char_is_space(char c);
+func bool mtb_char_is_digit(char c);
+func bool mtb_char_is_xdigit(char c);
 
-public char mtb_char_to_lower(char c);
-public char mtb_char_to_upper(char c);
+func char mtb_char_to_lower(char c);
+func char mtb_char_to_upper(char c);
 
 #endif // MTB_TYPE_H
 
 
 #ifdef MTB_TYPE_IMPLEMENTATION
 
-public bool
+func bool
 mtb_char_is_lower(char c)
 {
     return 'a' <= c && c <= 'z';
 }
 
-public bool
+func bool
 mtb_char_is_upper(char c)
 {
     return 'A' <= c && c <= 'Z';
 }
 
-public bool
+func bool
 mtb_char_is_alpha(char c)
 {
     return mtb_char_is_lower(c) || mtb_char_is_upper(c);
 }
 
-public bool
+func bool
 mtb_char_is_digit(char c)
 {
     return '0' <= c && c <= '9';
 }
 
-public bool
+func bool
 mtb_char_is_xdigit(char c)
 {
     return mtb_char_is_digit(c) || ('A' <= c && c <= 'F') || ('a' <= c && c <= 'f');
 }
 
-public bool
+func bool
 mtb_char_is_alnum(char c)
 {
     return mtb_char_is_alpha(c) || mtb_char_is_digit(c);
 }
 
-public bool
+func bool
 mtb_char_is_space(char c)
 {
     switch(c) {
@@ -289,13 +289,13 @@ mtb_char_is_space(char c)
     }
 }
 
-public char
+func char
 mtb_char_to_lower(char c)
 {
     return mtb_char_is_upper(c) ? c + ('a' - 'A') : c;
 }
 
-public char
+func char
 mtb_char_to_upper(char c)
 {
     return mtb_char_is_lower(c) ? c + ('A' - 'a') : c;
@@ -309,8 +309,8 @@ mtb_char_to_upper(char c)
 #include <assert.h>
 
 
-intern void
-test_mtb_min(void)
+func void
+_test_mtb_min(void)
 {
     assert(mtb_min_i8(I8_MIN, I8_MAX) == I8_MIN);
     assert(mtb_min_i16(I16_MIN, I16_MAX) == I16_MIN);
@@ -323,8 +323,8 @@ test_mtb_min(void)
     assert(mtb_min_u64(0, U64_MAX) == 0);
 }
 
-intern void
-test_mtb_max(void)
+func void
+_test_mtb_max(void)
 {
     assert(mtb_max_i8(I8_MIN, I8_MAX) == I8_MAX);
     assert(mtb_max_i16(I16_MIN, I16_MAX) == I16_MAX);
@@ -337,8 +337,8 @@ test_mtb_max(void)
     assert(mtb_max_u64(0, U64_MAX) == U64_MAX);
 }
 
-intern void
-test_mtb_add(void)
+func void
+_test_mtb_add(void)
 {
     assert(mtb_add_i8(I8_MAX - 1, 1) == I8_MAX);
     assert(mtb_add_i16(I16_MAX - 1, 1) == I16_MAX);
@@ -351,8 +351,8 @@ test_mtb_add(void)
     assert(mtb_add_u64(U64_MAX - 1, 1) == U64_MAX);
 }
 
-intern void
-test_mtb_sub(void)
+func void
+_test_mtb_sub(void)
 {
     assert(mtb_sub_i8(I8_MIN + 1, 1) == I8_MIN);
     assert(mtb_sub_i16(I16_MIN + 1, 1) == I16_MIN);
@@ -365,8 +365,8 @@ test_mtb_sub(void)
     assert(mtb_sub_u64(0 + 1, 1) == 0);
 }
 
-intern void
-test_mtb_mul(void)
+func void
+_test_mtb_mul(void)
 {
     assert(mtb_mul_i8(1, I8_MAX) == I8_MAX);
     assert(mtb_mul_i16(1, I16_MAX) == I16_MAX);
@@ -379,8 +379,8 @@ test_mtb_mul(void)
     assert(mtb_mul_u64(1, U64_MAX) == U64_MAX);
 }
 
-intern void
-test_mtb_cast(void)
+func void
+_test_mtb_cast(void)
 {
     assert(mtb_cast_i16_i8(I8_MIN) == I8_MIN);
     assert(mtb_cast_i16_i8(I8_MAX) == I8_MAX);
@@ -449,15 +449,15 @@ test_mtb_cast(void)
     assert(mtb_cast_u8_char(CHAR_MAX) == CHAR_MAX);
 }
 
-intern void
-test_mtb_type(void)
+func void
+_test_mtb_type(void)
 {
-    test_mtb_min();
-    test_mtb_max();
-    test_mtb_add();
-    test_mtb_sub();
-    test_mtb_mul();
-    test_mtb_cast();
+    _test_mtb_min();
+    _test_mtb_max();
+    _test_mtb_add();
+    _test_mtb_sub();
+    _test_mtb_mul();
+    _test_mtb_cast();
 }
 
 #endif // MTB_TYPE_TESTS

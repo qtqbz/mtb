@@ -5,5 +5,5 @@
 int
 main(void)
 {
-    bench_mtb_hmap();
+    _bench_mtb_hmap();
 }

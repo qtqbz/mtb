@@ -15,35 +15,35 @@ struct mtb_list_node
     for (MtbList *_head = (head), *var = _head->next; var != _head; var = var->next)
 #define mtb_list_foreach(head, var) _mtb_list_foreach(head, var, mtb_id(_head))
 
-public void mtb_list_init(MtbList *head);
-public void mtb_list_reset(MtbList *head);
-public bool mtb_list_is_empty(MtbList *head);
+func void mtb_list_init(MtbList *head);
+func void mtb_list_reset(MtbList *head);
+func bool mtb_list_is_empty(MtbList *head);
 
-public MtbList *mtb_list_remove(MtbList *item);
-public MtbList *mtb_list_insert_before(MtbList *pivot, MtbList *item);
-public MtbList *mtb_list_insert_after(MtbList *pivot, MtbList *item);
+func MtbList *mtb_list_remove(MtbList *item);
+func MtbList *mtb_list_insert_before(MtbList *pivot, MtbList *item);
+func MtbList *mtb_list_insert_after(MtbList *pivot, MtbList *item);
 
-public MtbList *mtb_list_add_last(MtbList *head, MtbList *item);
-public MtbList *mtb_list_remove_last(MtbList *head);
-public MtbList *mtb_list_get_last(MtbList *head);
+func MtbList *mtb_list_add_last(MtbList *head, MtbList *item);
+func MtbList *mtb_list_remove_last(MtbList *head);
+func MtbList *mtb_list_get_last(MtbList *head);
 
-public MtbList *mtb_list_add_first(MtbList *head, MtbList *item);
-public MtbList *mtb_list_remove_first(MtbList *head);
-public MtbList *mtb_list_get_first(MtbList *head);
+func MtbList *mtb_list_add_first(MtbList *head, MtbList *item);
+func MtbList *mtb_list_remove_first(MtbList *head);
+func MtbList *mtb_list_get_first(MtbList *head);
 
 
 /* Stack API */
 
-public MtbList *mtb_list_push(MtbList *head, MtbList *item);
-public MtbList *mtb_list_pop(MtbList *head);
-public MtbList *mtb_list_top(MtbList *head);
+func MtbList *mtb_list_push(MtbList *head, MtbList *item);
+func MtbList *mtb_list_pop(MtbList *head);
+func MtbList *mtb_list_top(MtbList *head);
 
 
 /* Queue API */
 
-public MtbList *mtb_list_enq(MtbList *head, MtbList *item);
-public MtbList *mtb_list_deq(MtbList *head);
-public MtbList *mtb_list_front(MtbList *head);
+func MtbList *mtb_list_enq(MtbList *head, MtbList *item);
+func MtbList *mtb_list_deq(MtbList *head);
+func MtbList *mtb_list_front(MtbList *head);
 
 
 /* Iterator API */
@@ -57,36 +57,36 @@ struct mtb_list_iter
 };
 
 
-public void mtb_list_iter_init(MtbListIter *it, MtbList *head);
-public void mtb_list_iter_reset(MtbListIter *it);
-public bool mtb_list_iter_has_next(MtbListIter *it);
-public void *mtb_list_iter_next(MtbListIter *it);
-public void *mtb_list_iter_remove(MtbListIter *it);
+func void mtb_list_iter_init(MtbListIter *it, MtbList *head);
+func void mtb_list_iter_reset(MtbListIter *it);
+func bool mtb_list_iter_has_next(MtbListIter *it);
+func void *mtb_list_iter_next(MtbListIter *it);
+func void *mtb_list_iter_remove(MtbListIter *it);
 
 #endif //MTB_LIST_H
 
 
 #ifdef MTB_LIST_IMPLEMENTATION
 
-public void
+func void
 mtb_list_init(MtbList *head)
 {
     head->next = head->prev = head;
 }
 
-public void
+func void
 mtb_list_reset(MtbList *head)
 {
     mtb_list_init(head);
 }
 
-public bool
+func bool
 mtb_list_is_empty(MtbList *head)
 {
     return head->next == head;
 }
 
-public MtbList *
+func MtbList *
 mtb_list_remove(MtbList *item)
 {
     item->prev->next = item->next;
@@ -94,7 +94,7 @@ mtb_list_remove(MtbList *item)
     return item;
 }
 
-public MtbList *
+func MtbList *
 mtb_list_insert_before(MtbList *pivot, MtbList *item)
 {
     item->prev = pivot->prev;
@@ -104,106 +104,106 @@ mtb_list_insert_before(MtbList *pivot, MtbList *item)
     return item;
 }
 
-public MtbList *
+func MtbList *
 mtb_list_insert_after(MtbList *pivot, MtbList *item)
 {
     return mtb_list_insert_before(pivot->next, item);
 }
 
-public MtbList *
+func MtbList *
 mtb_list_add_last(MtbList *head, MtbList *item)
 {
     return mtb_list_insert_before(head, item);
 }
 
-public MtbList *
+func MtbList *
 mtb_list_remove_last(MtbList *head)
 {
     return mtb_list_is_empty(head) ? nil : mtb_list_remove(head->prev);
 }
 
-public MtbList *
+func MtbList *
 mtb_list_get_last(MtbList *head)
 {
     return mtb_list_is_empty(head) ? nil : head->prev;
 }
 
-public MtbList *
+func MtbList *
 mtb_list_add_first(MtbList *head, MtbList *item)
 {
     return mtb_list_insert_after(head, item);
 }
 
-public MtbList *
+func MtbList *
 mtb_list_remove_first(MtbList *head)
 {
     return mtb_list_is_empty(head) ? nil : mtb_list_remove(head->next);
 }
 
-public MtbList *
+func MtbList *
 mtb_list_get_first(MtbList *head)
 {
     return mtb_list_is_empty(head) ? nil : head->next;
 }
 
-public MtbList *
+func MtbList *
 mtb_list_push(MtbList *head, MtbList *item)
 {
     return mtb_list_add_last(head, item);
 }
 
-public MtbList *
+func MtbList *
 mtb_list_pop(MtbList *head)
 {
     return mtb_list_remove_last(head);
 }
 
-public MtbList *
+func MtbList *
 mtb_list_top(MtbList *head)
 {
     return mtb_list_get_last(head);
 }
 
-public MtbList *
+func MtbList *
 mtb_list_enq(MtbList *head, MtbList *item)
 {
     return mtb_list_add_last(head, item);
 }
 
-public MtbList *
+func MtbList *
 mtb_list_deq(MtbList *head)
 {
     return mtb_list_remove_first(head);
 }
 
-public MtbList *
+func MtbList *
 mtb_list_front(MtbList *head)
 {
     return mtb_list_get_first(head);
 }
 
-public void
+func void
 mtb_list_iter_init(MtbListIter *it, MtbList *head)
 {
     it->head = head;
     mtb_list_iter_reset(it);
 }
 
-public void
+func void
 mtb_list_iter_reset(MtbListIter *it)
 {
     it->prev = it->head;
     it->next = nil;
 }
 
-public bool
+func bool
 mtb_list_iter_has_next(MtbListIter *it)
 {
     it->next = it->prev->next;
     return it->next != it->head;
 }
 
-public void *
+func void *
 mtb_list_iter_next(MtbListIter *it)
 {
     mtb_assert_always(it->next != nil);
@@ -212,7 +212,7 @@ mtb_list_iter_next(MtbListIter *it)
     return it->prev;
 }
 
-public void *
+func void *
 mtb_list_iter_remove(MtbListIter *it)
 {
     mtb_assert_always(it->prev != it->head);
@@ -227,8 +227,8 @@ mtb_list_iter_remove(MtbListIter *it)
 #include <assert.h>
 
 
-intern void
-test_mtb_list_list(void)
+func void
+_test_mtb_list_list(void)
 {
     MtbList list = {0};
     MtbList first = {0};
@@ -255,8 +255,8 @@ test_mtb_list_list(void)
     assert(mtb_list_is_empty(&list));
 }
 
-intern void
-test_mtb_list_stack(void)
+func void
+_test_mtb_list_stack(void)
 {
     MtbList stack = {0};
     MtbList itemA = {0};
@@ -287,8 +287,8 @@ test_mtb_list_stack(void)
     assert(mtb_list_is_empty(&stack));
 }
 
-intern void
-test_mtb_list_queue(void)
+func void
+_test_mtb_list_queue(void)
 {
     MtbList queue = {0};
     MtbList itemA = {0};
@@ -319,8 +319,8 @@ test_mtb_list_queue(void)
     assert(mtb_list_is_empty(&queue));
 }
 
-intern void
-test_mtb_list_iter(void)
+func void
+_test_mtb_list_iter(void)
 {
     MtbList list = {0};
     MtbList itemA = {0};
@@ -355,13 +355,13 @@ test_mtb_list_iter(void)
     assert(mtb_list_is_empty(&list));
 }
 
-intern void
-test_mtb_list(void)
+func void
+_test_mtb_list(void)
 {
-    test_mtb_list_list();
-    test_mtb_list_stack();
-    test_mtb_list_queue();
-    test_mtb_list_iter();
+    _test_mtb_list_list();
+    _test_mtb_list_stack();
+    _test_mtb_list_queue();
+    _test_mtb_list_iter();
 }
 
 #endif // MTB_LIST_TESTS

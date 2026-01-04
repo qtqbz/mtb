@@ -67,22 +67,22 @@ struct mtb_segarr
 
 /* Segment Array API */
 
-public void mtb_segarr_init(MtbSegArr *array, MtbArena *arena, u64 itemSize);
-public void mtb_segarr_clear(MtbSegArr *array);
-public bool mtb_segarr_is_empty(MtbSegArr *array);
+func void mtb_segarr_init(MtbSegArr *array, MtbArena *arena, u64 itemSize);
+func void mtb_segarr_clear(MtbSegArr *array);
+func bool mtb_segarr_is_empty(MtbSegArr *array);
 
-public void *mtb_segarr_add_last(MtbSegArr *array);
-public void *mtb_segarr_remove_last(MtbSegArr *array);
-public void *mtb_segarr_get(MtbSegArr *array, u64 index);
+func void *mtb_segarr_add_last(MtbSegArr *array);
+func void *mtb_segarr_remove_last(MtbSegArr *array);
+func void *mtb_segarr_get(MtbSegArr *array, u64 index);
 
-public void mtb_segarr_add_last_n(MtbSegArr *array, void *src, u64 n);
+func void mtb_segarr_add_last_n(MtbSegArr *array, void *src, u64 n);
 
 
 /* Stack API */
 
-public void *mtb_segarr_push(MtbSegArr *array);
-public void *mtb_segarr_pop(MtbSegArr *array);
-public void *mtb_segarr_top(MtbSegArr *array);
+func void *mtb_segarr_push(MtbSegArr *array);
+func void *mtb_segarr_pop(MtbSegArr *array);
+func void *mtb_segarr_top(MtbSegArr *array);
 
 
 /* Iterator API */
@@ -95,10 +95,10 @@ struct mtb_segarr_iter
 };
 
 
-public void mtb_segarr_iter_init(MtbSegArrIter *it, MtbSegArr *array);
-public void mtb_segarr_iter_reset(MtbSegArrIter *it);
-public bool mtb_segarr_iter_has_next(MtbSegArrIter *it);
-public void *mtb_segarr_iter_next(MtbSegArrIter *it);
+func void mtb_segarr_iter_init(MtbSegArrIter *it, MtbSegArr *array);
+func void mtb_segarr_iter_reset(MtbSegArrIter *it);
+func bool mtb_segarr_iter_has_next(MtbSegArrIter *it);
+func void *mtb_segarr_iter_next(MtbSegArrIter *it);
 
 #endif //MTB_MTB_SEGARR_H
 
@@ -111,7 +111,7 @@ public void *mtb_segarr_iter_next(MtbSegArrIter *it);
 #define _mtb_segarr_item(s, i) (i - _mtb_segarr_segment_start(s))
 
 
-public void
+func void
 mtb_segarr_init(MtbSegArr *array, MtbArena *arena, u64 itemSize)
 {
     array->arena = arena;
@@ -119,19 +119,19 @@ mtb_segarr_init(MtbSegArr *array, MtbArena *arena, u64 itemSize)
     array->count = 0;
 }
 
-public void
+func void
 mtb_segarr_clear(MtbSegArr *array)
 {
     array->count = 0;
 }
 
-public bool
+func bool
 mtb_segarr_is_empty(MtbSegArr *array)
 {
     return array->count == 0;
 }
 
-public void *
+func void *
 mtb_segarr_add_last(MtbSegArr *array)
 {
     u64 index = array->count++;
@@ -145,7 +145,7 @@ mtb_segarr_add_last(MtbSegArr *array)
     return array->segments[segment] + item * array->itemSize;
 }
 
-public void *
+func void *
 mtb_segarr_remove_last(MtbSegArr *array)
 {
     mtb_assert_always(array->count > 0);
@@ -155,7 +155,7 @@ mtb_segarr_remove_last(MtbSegArr *array)
     return array->segments[segment] + item * array->itemSize;
 }
 
-public void *
+func void *
 mtb_segarr_get(MtbSegArr *array, u64 index)
 {
     mtb_assert_always(index < array->count);
@@ -164,7 +164,7 @@ mtb_segarr_get(MtbSegArr *array, u64 index)
     return array->segments[segment] + item * array->itemSize;
 }
 
-public void
+func void
 mtb_segarr_add_last_n(MtbSegArr *array, void *src, u64 n)
 {
     for (u64 i = 0; i < n; i++) {
@@ -172,44 +172,44 @@ mtb_segarr_add_last_n(MtbSegArr *array, void *src, u64 n)
     }
 }
 
-public void *
+func void *
 mtb_segarr_push(MtbSegArr *array)
 {
     return mtb_segarr_add_last(array);
 }
 
-public void *
+func void *
 mtb_segarr_pop(MtbSegArr *array)
 {
     return mtb_segarr_remove_last(array);
 }
 
-public void *
+func void *
 mtb_segarr_top(MtbSegArr *array)
 {
     return mtb_segarr_get(array, array->count - 1);
 }
 
-public void
+func void
 mtb_segarr_iter_init(MtbSegArrIter *it, MtbSegArr *array)
 {
     it->array = array;
     mtb_segarr_iter_reset(it);
 }
 
-public void
+func void
 mtb_segarr_iter_reset(MtbSegArrIter *it)
 {
     it->index = 0;
 }
 
-public bool
+func bool
 mtb_segarr_iter_has_next(MtbSegArrIter *it)
 {
     return it->index < it->array->count;
 }
 
-public void *
+func void *
 mtb_segarr_iter_next(MtbSegArrIter *it)
 {
     return mtb_segarr_get(it->array, it->index++);
@@ -223,8 +223,8 @@ mtb_segarr_iter_next(MtbSegArrIter *it)
 #include <assert.h>
 
 
-intern void
-test_mtb_segarr_add_last(MtbArena arena)
+func void
+_test_mtb_segarr_add_last(MtbArena arena)
 {
     MtbSegArr array = {0};
     mtb_segarr_init(&array, &arena, sizeof(u64));
@@ -240,8 +240,8 @@ test_mtb_segarr_add_last(MtbArena arena)
     assert(mtb_segarr_is_empty(&array));
 }
 
-intern void
-test_mtb_segarr_remove_last(MtbArena arena)
+func void
+_test_mtb_segarr_remove_last(MtbArena arena)
 {
     MtbSegArr array = {0};
     mtb_segarr_init(&array, &arena, sizeof(u64));
@@ -256,8 +256,8 @@ test_mtb_segarr_remove_last(MtbArena arena)
     assert(mtb_segarr_is_empty(&array));
 }
 
-intern void
-test_mtb_segarr_add_last_n(MtbArena arena)
+func void
+_test_mtb_segarr_add_last_n(MtbArena arena)
 {
     MtbSegArr array = {0};
     mtb_segarr_init(&array, &arena, sizeof(u64));
@@ -275,8 +275,8 @@ test_mtb_segarr_add_last_n(MtbArena arena)
     assert(mtb_segarr_is_empty(&array));
 }
 
-intern void
-test_mtb_segarr_stack(MtbArena arena)
+func void
+_test_mtb_segarr_stack(MtbArena arena)
 {
     MtbSegArr array = {0};
     mtb_segarr_init(&array, &arena, sizeof(u64));
@@ -292,8 +292,8 @@ test_mtb_segarr_stack(MtbArena arena)
     assert(mtb_segarr_is_empty(&array));
 }
 
-intern void
-test_mtb_segarr_iter(MtbArena arena)
+func void
+_test_mtb_segarr_iter(MtbArena arena)
 {
     MtbSegArr array = {0};
     mtb_segarr_init(&array, &arena, sizeof(u64));
@@ -321,17 +321,17 @@ test_mtb_segarr_iter(MtbArena arena)
     assert(mtb_segarr_is_empty(&array));
 }
 
-intern void
-test_mtb_segarr(void)
+func void
+_test_mtb_segarr(void)
 {
     MtbArena arena = {0};
     mtb_arena_init(&arena, mb(10), &MTB_ARENA_DEF_ALLOCATOR);
 
-    test_mtb_segarr_add_last(arena);
-    test_mtb_segarr_remove_last(arena);
-    test_mtb_segarr_add_last_n(arena);
-    test_mtb_segarr_stack(arena);
-    test_mtb_segarr_iter(arena);
+    _test_mtb_segarr_add_last(arena);
+    _test_mtb_segarr_remove_last(arena);
+    _test_mtb_segarr_add_last_n(arena);
+    _test_mtb_segarr_stack(arena);
+    _test_mtb_segarr_iter(arena);
 
     mtb_arena_deinit(&arena);
 }

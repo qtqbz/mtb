@@ -11,11 +11,11 @@ struct mtb_arena_allocator
     u64 (*size)(void *ctx, void *ptr);              /* return allocation size */
 };
 
-public u64 mtb_arena_def_size(void *ctx, void *ptr);
-public void *mtb_arena_def_alloc(void *ctx, void *ptr, u64 size);
+func u64 mtb_arena_def_size(void *ctx, void *ptr);
+func void *mtb_arena_def_alloc(void *ctx, void *ptr, u64 size);
 
-public u64 mtb_arena_def_virt_size(void *ctx, void *ptr);
-public void *mtb_arena_def_virt_alloc(void *ctx, void *ptr, u64 size);
+func u64 mtb_arena_def_virt_size(void *ctx, void *ptr);
+func void *mtb_arena_def_virt_alloc(void *ctx, void *ptr, u64 size);
 
 global MtbArenaAllocator MTB_ARENA_DEF_ALLOCATOR = {
     .ctx = nil,
@@ -59,19 +59,19 @@ struct mtb_arena_bump_options
     bool no_zero;
 };
 
-public void mtb_arena_init(MtbArena *arena, u64 size, MtbArenaAllocator *allocator);
-public void mtb_arena_deinit(MtbArena *arena);
+func void mtb_arena_init(MtbArena *arena, u64 size, MtbArenaAllocator *allocator);
+func void mtb_arena_deinit(MtbArena *arena);
 
-public void *mtb_arena_bump_opt(MtbArena *arena, u64 size, MtbArenaBumpOptions opt);
+func void *mtb_arena_bump_opt(MtbArena *arena, u64 size, MtbArenaBumpOptions opt);
 #define mtb_arena_bump_raw(arena, size, ...) \
     mtb_arena_bump_opt(arena, size, (MtbArenaBumpOptions){ __VA_ARGS__ })
 #define mtb_arena_bump(arena, type, count, ...) \
     (type *)mtb_arena_bump_opt(arena, mtb_mul_u64(sizeof(type), (count)), (MtbArenaBumpOptions){ .align = mtb_alignof(type), __VA_ARGS__ })
 
-public MtbArenaSavePoint mtb_arena_save(MtbArena *arena);
-public void mtb_arena_restore(MtbArena *arena, MtbArenaSavePoint *sp);
+func MtbArenaSavePoint mtb_arena_save(MtbArena *arena);
+func void mtb_arena_restore(MtbArena *arena, MtbArenaSavePoint *sp);
 
-public void mtb_arena_clear(MtbArena *arena);
+func void mtb_arena_clear(MtbArena *arena);
 
 #endif //MTB_ARENA_H
 
@@ -86,7 +86,7 @@ public void mtb_arena_clear(MtbArena *arena);
 
 #define MTB_ARENA_DEF_ALLOCATOR_HEADER_SIZE sizeof(u64)
 
-public u64
+func u64
 mtb_arena_def_size(void *ctx, void *ptr)
 {
     u8 *base = (u8 *)ptr;
@@ -97,7 +97,7 @@ mtb_arena_def_size(void *ctx, void *ptr)
     return allocSize;
 }
 
-public void *
+func void *
 mtb_arena_def_alloc(void *ctx, void *ptr, u64 size)
 {
     u8 *base = (u8 *)ptr;
@@ -121,7 +121,7 @@ mtb_arena_def_alloc(void *ctx, void *ptr, u64 size)
     return header + 1;
 }
 
-public u64
+func u64
 mtb_arena_def_virt_size(void *ctx, void *ptr)
 {
     u8 *base = (u8 *)ptr;
@@ -132,7 +132,7 @@ mtb_arena_def_virt_size(void *ctx, void *ptr)
     return allocSize;
 }
 
-public void *
+func void *
 mtb_arena_def_virt_alloc(void *ctx, void *ptr, u64 size)
 {
     u8 *base = (u8 *)ptr;
@@ -163,7 +163,7 @@ mtb_arena_def_virt_alloc(void *ctx, void *ptr, u64 size)
     return header + 1;
 }
 
-public void
+func void
 mtb_arena_init(MtbArena *arena, u64 size, MtbArenaAllocator *allocator)
 {
     arena->allocator = allocator;
@@ -172,7 +172,7 @@ mtb_arena_init(MtbArena *arena, u64 size, MtbArenaAllocator *allocator)
     arena->size = size;
 }
 
-public void
+func void
 mtb_arena_deinit(MtbArena *arena)
 {
     MtbArenaAllocator *allocator = arena->allocator;
@@ -183,7 +183,7 @@ mtb_arena_deinit(MtbArena *arena)
     arena->allocator = nil;
 }
 
-public void *
+func void *
 mtb_arena_bump_opt(MtbArena *arena, u64 size, MtbArenaBumpOptions opt)
 {
     mtb_assert_always(size > 0);
@@ -202,7 +202,7 @@ mtb_arena_bump_opt(MtbArena *arena, u64 size, MtbArenaBumpOptions opt)
     return opt.no_zero ? result : memset(result, 0, size);
 }
 
-public MtbArenaSavePoint
+func MtbArenaSavePoint
 mtb_arena_save(MtbArena *arena)
 {
     MtbArenaSavePoint sp = {0};
@@ -211,14 +211,14 @@ mtb_arena_save(MtbArena *arena)
     return sp;
 }
 
-public void
+func void
 mtb_arena_restore(MtbArena *arena, MtbArenaSavePoint *sp)
 {
     mtb_assert_always(arena == sp->arena);
     arena->offset = sp->offset;
 }
 
-public void
+func void
 mtb_arena_clear(MtbArena *arena)
 {
     arena->offset = 0;
@@ -232,8 +232,8 @@ mtb_arena_clear(MtbArena *arena)
 #include <assert.h>
 
 
-intern void
-test_mtb_allocator(MtbArenaAllocator *allocator)
+func void
+_test_mtb_allocator(MtbArenaAllocator *allocator)
 {
     MtbArena arena = {0};
     u64 pageSize = (u64)sysconf(_SC_PAGE_SIZE);
@@ -284,23 +284,23 @@ test_mtb_allocator(MtbArenaAllocator *allocator)
     assert(arena.allocator == nil);
 }
 
-intern void
-test_mtb_def_virt_allocator(void)
+func void
+_test_mtb_def_virt_allocator(void)
 {
-    test_mtb_allocator(&MTB_ARENA_DEF_VIRT_ALLOCATOR);
+    _test_mtb_allocator(&MTB_ARENA_DEF_VIRT_ALLOCATOR);
 }
 
-intern void
-test_mtb_def_allocator(void)
+func void
+_test_mtb_def_allocator(void)
 {
-    test_mtb_allocator(&MTB_ARENA_DEF_ALLOCATOR);
+    _test_mtb_allocator(&MTB_ARENA_DEF_ALLOCATOR);
 }
 
-intern void
-test_mtb_arena(void)
+func void
+_test_mtb_arena(void)
 {
-    test_mtb_def_virt_allocator();
-    test_mtb_def_allocator();
+    _test_mtb_def_virt_allocator();
+    _test_mtb_def_allocator();
 }
 
 #endif // MTB_ARENA_TESTS

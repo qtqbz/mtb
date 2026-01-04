@@ -17,9 +17,8 @@
 
 /* Aliases */
 
-#define intern static
+#define func static
 #define global static __attribute__((unused))
-#define public
 
 #define nil ((void *)0)
 
@@ -126,8 +125,8 @@
 #include <assert.h>
 
 
-intern void
-test_mtb_defer(void)
+func void
+_test_mtb_defer(void)
 {
 #if defined(_MTB_COMPILER_GCC)
     int i = 0;
@@ -143,8 +142,8 @@ test_mtb_defer(void)
 #endif
 }
 
-intern void
-test_mtb_swap(void)
+func void
+_test_mtb_swap(void)
 {
     int a = 5;
     int b = 10;
@@ -153,11 +152,11 @@ test_mtb_swap(void)
     assert(b == 5);
 }
 
-intern void
-test_mtb_macro(void)
+func void
+_test_mtb_macro(void)
 {
-    test_mtb_defer();
-    test_mtb_swap();
+    _test_mtb_defer();
+    _test_mtb_swap();
 }
 
 #endif // MTB_MACRO_TESTS

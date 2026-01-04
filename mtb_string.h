@@ -49,13 +49,13 @@ struct mtb_str_join_options
 #define mtb_str_lit(c) mtb_str((u8 *)(c), sizeof(c) - 1)
 #define mtb_str_empty() mtb_str_lit("")
 
-public MtbStr mtb_str_from_cstr(char *cstr);
-public char *mtb_str_to_cstr(MtbArena *arena, MtbStr str);
+func MtbStr mtb_str_from_cstr(char *cstr);
+func char *mtb_str_to_cstr(MtbArena *arena, MtbStr str);
 
-public MtbStr mtb_str_vsprintf(MtbArena *arena, char *fmt, va_list args);
-public MtbStr mtb_str_sprintf(MtbArena *arena, char *fmt, ...);
+func MtbStr mtb_str_vsprintf(MtbArena *arena, char *fmt, va_list args);
+func MtbStr mtb_str_sprintf(MtbArena *arena, char *fmt, ...);
 
-public i32 mtb_str_cmp_opt(MtbStr a, MtbStr b, MtbStrCmpOptions opt);
+func i32 mtb_str_cmp_opt(MtbStr a, MtbStr b, MtbStrCmpOptions opt);
 #define mtb_str_cmp(a, b, ...) mtb_str_cmp_opt(a, b, (MtbStrCmpOptions){ __VA_ARGS__ })
 #define mtb_str_cmp_lit(a, b, ...) mtb_str_cmp(a, mtb_str_lit(b), __VA_ARGS__)
 #define mtb_str_cmp_cstr(a, b, ...) mtb_str_cmp(a, mtb_str_from_cstr(b), __VA_ARGS__)
@@ -63,7 +63,7 @@ public i32 mtb_str_cmp_opt(MtbStr a, MtbStr b, MtbStrCmpOptions opt);
 #define mtb_str_is_equal_lit(a, b, ...) mtb_str_is_equal(a, mtb_str_lit(b), __VA_ARGS__)
 #define mtb_str_is_equal_cstr(a, b, ...) mtb_str_is_equal(a, mtb_str_from_cstr(b), __VA_ARGS__)
 
-public u64 mtb_str_find_opt(MtbStr str, MtbStr pattern, MtbStrFindOptions opt);
+func u64 mtb_str_find_opt(MtbStr str, MtbStr pattern, MtbStrFindOptions opt);
 #define mtb_str_find(str, pattern, ...) mtb_str_find_opt(str, pattern, (MtbStrFindOptions){ __VA_ARGS__ })
 #define mtb_str_find_lit(str, pattern, ...) mtb_str_find(str, mtb_str_lit(pattern), __VA_ARGS__)
 #define mtb_str_find_char(str, pattern, ...) mtb_str_find(str, mtb_str_char(pattern), __VA_ARGS__)
@@ -73,29 +73,29 @@ public u64 mtb_str_find_opt(MtbStr str, MtbStr pattern, MtbStrFindOptions opt);
 #define mtb_str_contains_char(str, pattern, ...) mtb_str_contains(str, mtb_str_char(pattern), __VA_ARGS__)
 #define mtb_str_contains_cstr(str, pattern, ...) mtb_str_contains(str, mtb_str_from_cstr(pattern), __VA_ARGS__)
 
-public bool mtb_str_has_prefix_opt(MtbStr str, MtbStr pfx, MtbStrFindOptions opt);
+func bool mtb_str_has_prefix_opt(MtbStr str, MtbStr pfx, MtbStrFindOptions opt);
 #define mtb_str_has_prefix(str, pfx, ...) mtb_str_has_prefix_opt(str, pfx, (MtbStrFindOptions){ __VA_ARGS__ })
 #define mtb_str_has_prefix_lit(str, pfx, ...) mtb_str_has_prefix(str, mtb_str_lit(pfx), __VA_ARGS__)
 #define mtb_str_has_prefix_cstr(str, pfx, ...) mtb_str_has_prefix(str, mtb_str_from_cstr(pfx), __VA_ARGS__)
 
-public bool mtb_str_has_suffix_opt(MtbStr str, MtbStr sfx, MtbStrFindOptions opt);
+func bool mtb_str_has_suffix_opt(MtbStr str, MtbStr sfx, MtbStrFindOptions opt);
 #define mtb_str_has_suffix(str, sfx, ...) mtb_str_has_suffix_opt(str, sfx, (MtbStrFindOptions){ __VA_ARGS__ })
 #define mtb_str_has_suffix_lit(str, sfx, ...) mtb_str_has_suffix(str, mtb_str_lit(sfx), __VA_ARGS__)
 #define mtb_str_has_suffix_cstr(str, sfx, ...) mtb_str_has_suffix(str, mtb_str_from_cstr(sfx), __VA_ARGS__)
 
-public MtbStr mtb_str_trim(MtbStr str);
-public MtbStr mtb_str_trim_beg(MtbStr str);
-public MtbStr mtb_str_trim_end(MtbStr str);
-public MtbStr mtb_str_skip(MtbStr str, u64 length);
-public MtbStr mtb_str_chop(MtbStr str, u64 length);
-public MtbStr mtb_str_to_lower(MtbArena *arena, MtbStr str);
-public MtbStr mtb_str_to_upper(MtbArena *arena, MtbStr str);
-public MtbStr mtb_str_dup(MtbArena *arena, MtbStr str);
-public MtbStr mtb_str_cat(MtbArena *arena, MtbStr a, MtbStr b);
-public MtbStr mtb_str_substr(MtbStr str, u64 beg, u64 end);
-public MtbStr mtb_str_prefix(MtbStr str, u64 length);
-public MtbStr mtb_str_suffix(MtbStr str, u64 length);
-public bool mtb_str_is_empty(MtbStr str);
+func MtbStr mtb_str_trim(MtbStr str);
+func MtbStr mtb_str_trim_beg(MtbStr str);
+func MtbStr mtb_str_trim_end(MtbStr str);
+func MtbStr mtb_str_skip(MtbStr str, u64 length);
+func MtbStr mtb_str_chop(MtbStr str, u64 length);
+func MtbStr mtb_str_to_lower(MtbArena *arena, MtbStr str);
+func MtbStr mtb_str_to_upper(MtbArena *arena, MtbStr str);
+func MtbStr mtb_str_dup(MtbArena *arena, MtbStr str);
+func MtbStr mtb_str_cat(MtbArena *arena, MtbStr a, MtbStr b);
+func MtbStr mtb_str_substr(MtbStr str, u64 beg, u64 end);
+func MtbStr mtb_str_prefix(MtbStr str, u64 length);
+func MtbStr mtb_str_suffix(MtbStr str, u64 length);
+func bool mtb_str_is_empty(MtbStr str);
 
 
 /* String List */
@@ -110,24 +110,24 @@ struct mtb_str_list
     };
 };
 
-public void mtb_str_list_init(MtbArena *arena, MtbStrList *list);
-public void mtb_str_list_clear(MtbStrList *list);
-public bool mtb_str_list_is_empty(MtbStrList *list);
+func void mtb_str_list_init(MtbArena *arena, MtbStrList *list);
+func void mtb_str_list_clear(MtbStrList *list);
+func bool mtb_str_list_is_empty(MtbStrList *list);
 
-public MtbStrList *mtb_str_list_append(MtbStrList *list, MtbStr *str);
+func MtbStrList *mtb_str_list_append(MtbStrList *list, MtbStr *str);
 #define mtb_str_list_append_lit(list, str) mtb_str_list_append(list, &mtb_str_lit(str))
-public MtbStrList *mtb_str_list_appendf(MtbStrList *list, char *fmt, ...);
+func MtbStrList *mtb_str_list_appendf(MtbStrList *list, char *fmt, ...);
 
-public MtbStrList *mtb_str_list_prepend(MtbStrList *list, MtbStr *str);
+func MtbStrList *mtb_str_list_prepend(MtbStrList *list, MtbStr *str);
 #define mtb_str_list_prepend_lit(list, str) mtb_str_list_prepend(list, &mtb_str_lit(str))
-public MtbStrList *mtb_str_list_prependf(MtbStrList *list, char *fmt, ...);
+func MtbStrList *mtb_str_list_prependf(MtbStrList *list, char *fmt, ...);
 
-public MtbStr mtb_str_join_opt(MtbStrList *list, MtbStr delim, MtbStrJoinOptions opt);
+func MtbStr mtb_str_join_opt(MtbStrList *list, MtbStr delim, MtbStrJoinOptions opt);
 #define mtb_str_join(list, delim, ...) mtb_str_join_opt(list, delim, (MtbStrJoinOptions){ __VA_ARGS__ })
 #define mtb_str_join_lit(list, delim, ...) mtb_str_join(list, mtb_str_lit(delim), __VA_ARGS__)
 #define mtb_str_join_char(list, delim, ...) mtb_str_join(list, mtb_str_char(delim), __VA_ARGS__)
 
-public void mtb_str_split_opt(MtbStrList *list, MtbStr str, MtbStr delim, MtbStrSplitOptions opt);
+func void mtb_str_split_opt(MtbStrList *list, MtbStr str, MtbStr delim, MtbStrSplitOptions opt);
 #define mtb_str_split(list, str, delim, ...) mtb_str_split_opt(list, str, delim, (MtbStrSplitOptions){ __VA_ARGS__ })
 #define mtb_str_split_lit(list, str, delim, ...) mtb_str_split(list, str, mtb_str_lit(delim), __VA_ARGS__)
 #define mtb_str_split_char(list, str, delim, ...) mtb_str_split(list, str, mtb_str_char(delim), __VA_ARGS__)
@@ -135,7 +135,7 @@ public void mtb_str_split_opt(MtbStrList *list, MtbStr str, MtbStr delim, MtbStr
 
 /* Hash map utils */
 
-public u64
+func u64
 mtb_str_key_hash(void *key)
 {
     MtbStr *s = (MtbStr *)key;
@@ -146,7 +146,7 @@ mtb_str_key_hash(void *key)
     return hash;
 }
 
-public bool
+func bool
 mtb_str_key_equals(void *key1, void *key2)
 {
     MtbStr *s1 = (MtbStr *)key1;
@@ -163,13 +163,13 @@ mtb_str_key_equals(void *key1, void *key2)
 #include <stdio.h>
 
 
-public MtbStr
+func MtbStr
 mtb_str_from_cstr(char *cstr)
 {
     return mtb_str((u8 *)cstr, strlen(cstr));
 }
 
-public char *
+func char *
 mtb_str_to_cstr(MtbArena *arena, MtbStr str)
 {
     char *cstr = mtb_arena_bump(arena, char, str.length + 1);
@@ -177,7 +177,7 @@ mtb_str_to_cstr(MtbArena *arena, MtbStr str)
     return cstr;
 }
 
-public MtbStr
+func MtbStr
 mtb_str_vsprintf(MtbArena *arena, char *fmt, va_list args)
 {
     va_list argsTmp;
@@ -195,7 +195,7 @@ mtb_str_vsprintf(MtbArena *arena, char *fmt, va_list args)
     return mtb_str((u8 *)chars, length);
 }
 
-public MtbStr
+func MtbStr
 mtb_str_sprintf(MtbArena *arena, char *fmt, ...)
 {
     va_list args;
@@ -207,7 +207,7 @@ mtb_str_sprintf(MtbArena *arena, char *fmt, ...)
     return result;
 }
 
-public i32
+func i32
 mtb_str_cmp_opt(MtbStr a, MtbStr b, MtbStrCmpOptions opt)
 {
     // TODO intrinsify
@@ -230,7 +230,7 @@ mtb_str_cmp_opt(MtbStr a, MtbStr b, MtbStrCmpOptions opt)
     return a.length == b.length ? 0 : a.length > b.length ? 1 : -1;
 }
 
-public u64
+func u64
 mtb_str_find_opt(MtbStr str, MtbStr pattern, MtbStrFindOptions opt)
 {
     if (str.length >= pattern.length) {
@@ -264,7 +264,7 @@ mtb_str_find_opt(MtbStr str, MtbStr pattern, MtbStrFindOptions opt)
     return MTB_STR_NOT_FOUND;
 }
 
-public bool
+func bool
 mtb_str_has_prefix_opt(MtbStr str, MtbStr pfx, MtbStrFindOptions opt)
 {
     if (str.length < pfx.length) {
@@ -274,7 +274,7 @@ mtb_str_has_prefix_opt(MtbStr str, MtbStr pfx, MtbStrFindOptions opt)
     return mtb_str_is_equal(pfx, substr, .ignoreCase = opt.ignoreCase);
 }
 
-public bool
+func bool
 mtb_str_has_suffix_opt(MtbStr str, MtbStr sfx, MtbStrFindOptions opt)
 {
     if (str.length < sfx.length) {
@@ -284,7 +284,7 @@ mtb_str_has_suffix_opt(MtbStr str, MtbStr sfx, MtbStrFindOptions opt)
     return mtb_str_is_equal(sfx, substr, .ignoreCase = opt.ignoreCase);
 }
 
-public MtbStr
+func MtbStr
 mtb_str_trim(MtbStr str)
 {
     u64 beg = 0;
@@ -300,7 +300,7 @@ mtb_str_trim(MtbStr str)
     return str;
 }
 
-public MtbStr
+func MtbStr
 mtb_str_trim_beg(MtbStr str)
 {
     u64 beg = 0;
@@ -312,7 +312,7 @@ mtb_str_trim_beg(MtbStr str)
     return str;
 }
 
-public MtbStr
+func MtbStr
 mtb_str_trim_end(MtbStr str)
 {
     u64 end = str.length;
@@ -323,7 +323,7 @@ mtb_str_trim_end(MtbStr str)
     return str;
 }
 
-public MtbStr
+func MtbStr
 mtb_str_skip(MtbStr str, u64 length)
 {
     mtb_assert_always(str.length >= length);
@@ -332,7 +332,7 @@ mtb_str_skip(MtbStr str, u64 length)
     return str;
 }
 
-public MtbStr
+func MtbStr
 mtb_str_chop(MtbStr str, u64 length)
 {
     mtb_assert_always(str.length >= length);
@@ -340,7 +340,7 @@ mtb_str_chop(MtbStr str, u64 length)
     return str;
 }
 
-public MtbStr
+func MtbStr
 mtb_str_to_lower(MtbArena *arena, MtbStr str)
 {
     if (mtb_str_is_empty(str)) {
@@ -354,7 +354,7 @@ mtb_str_to_lower(MtbArena *arena, MtbStr str)
     return str;
 }
 
-public MtbStr
+func MtbStr
 mtb_str_to_upper(MtbArena *arena, MtbStr str)
 {
     if (mtb_str_is_empty(str)) {
@@ -368,7 +368,7 @@ mtb_str_to_upper(MtbArena *arena, MtbStr str)
     return str;
 }
 
-public MtbStr
+func MtbStr
 mtb_str_dup(MtbArena *arena, MtbStr str)
 {
     if (mtb_str_is_empty(str)) {
@@ -380,7 +380,7 @@ mtb_str_dup(MtbArena *arena, MtbStr str)
     return str;
 }
 
-public MtbStr
+func MtbStr
 mtb_str_cat(MtbArena *arena, MtbStr a, MtbStr b)
 {
     u64 length = mtb_add_u64(a.length, b.length);
@@ -393,7 +393,7 @@ mtb_str_cat(MtbArena *arena, MtbStr a, MtbStr b)
     return mtb_str(bytes, length);
 }
 
-public MtbStr
+func MtbStr
 mtb_str_substr(MtbStr str, u64 beg, u64 end)
 {
     mtb_assert_always(beg <= end && end <= str.length);
@@ -402,7 +402,7 @@ mtb_str_substr(MtbStr str, u64 beg, u64 end)
     return str;
 }
 
-public MtbStr
+func MtbStr
 mtb_str_prefix(MtbStr str, u64 length)
 {
     mtb_assert_always(str.length >= length);
@@ -410,7 +410,7 @@ mtb_str_prefix(MtbStr str, u64 length)
     return str;
 }
 
-public MtbStr mtb_str_suffix(MtbStr str, u64 length)
+func MtbStr mtb_str_suffix(MtbStr str, u64 length)
 {
     mtb_assert_always(str.length >= length);
     str.chars += str.length - length;
@@ -418,32 +418,32 @@ public MtbStr mtb_str_suffix(MtbStr str, u64 length)
     return str;
 }
 
-public bool
+func bool
 mtb_str_is_empty(MtbStr str)
 {
     return str.length == 0;
 }
 
-public void
+func void
 mtb_str_list_init(MtbArena *arena, MtbStrList *list)
 {
     list->arena = arena;
     mtb_list_init(&list->node);
 }
 
-public void
+func void
 mtb_str_list_clear(MtbStrList *list)
 {
     mtb_list_reset(&list->node);
 }
 
-public bool
+func bool
 mtb_str_list_is_empty(MtbStrList *list)
 {
     return mtb_list_is_empty(&list->node);
 }
 
-public MtbStrList *
+func MtbStrList *
 mtb_str_list_append(MtbStrList *list, MtbStr *str)
 {
     MtbStrList *node = mtb_arena_bump(list->arena, MtbStrList, 1);
@@ -452,7 +452,7 @@ mtb_str_list_append(MtbStrList *list, MtbStr *str)
     return node;
 }
 
-public MtbStrList *
+func MtbStrList *
 mtb_str_list_appendf(MtbStrList *list, char *fmt, ...)
 {
     va_list args;
@@ -463,7 +463,7 @@ mtb_str_list_appendf(MtbStrList *list, char *fmt, ...)
     return mtb_str_list_append(list, str);
 }
 
-public MtbStrList *
+func MtbStrList *
 mtb_str_list_prepend(MtbStrList *list, MtbStr *str)
 {
     MtbStrList *node = mtb_arena_bump(list->arena, MtbStrList, 1);
@@ -472,7 +472,7 @@ mtb_str_list_prepend(MtbStrList *list, MtbStr *str)
     return node;
 }
 
-public MtbStrList *
+func MtbStrList *
 mtb_str_list_prependf(MtbStrList *list, char *fmt, ...)
 {
     va_list args;
@@ -483,7 +483,7 @@ mtb_str_list_prependf(MtbStrList *list, char *fmt, ...)
     return mtb_str_list_prepend(list, str);
 }
 
-public MtbStr
+func MtbStr
 mtb_str_join_opt(MtbStrList *list, MtbStr delim, MtbStrJoinOptions opt)
 {
     u64 length = 0;
@@ -516,7 +516,7 @@ mtb_str_join_opt(MtbStrList *list, MtbStr delim, MtbStrJoinOptions opt)
     return mtb_str(bytes, length);
 }
 
-public void
+func void
 mtb_str_split_opt(MtbStrList *list, MtbStr str, MtbStr delim, MtbStrSplitOptions opt)
 {
     MtbArena *arena = list->arena;
@@ -553,8 +553,8 @@ mtb_str_split_opt(MtbStrList *list, MtbStr str, MtbStr delim, MtbStrSplitOptions
 #include <assert.h>
 
 
-intern void
-test_mtb_str_cstr(MtbArena arena)
+func void
+_test_mtb_str_cstr(MtbArena arena)
 {
     char *c1 = "My C String!";
     MtbStr s1 = mtb_str_from_cstr(c1);
@@ -567,8 +567,8 @@ test_mtb_str_cstr(MtbArena arena)
     assert(strncmp(c2, s2.chars, s2.length) == 0);
 }
 
-intern void
-test_mtb_str_sprintf(MtbArena arena)
+func void
+_test_mtb_str_sprintf(MtbArena arena)
 {
     MtbStr e1 = mtb_str_empty();
     MtbStr a1 = mtb_str_sprintf(&arena, "");
@@ -581,8 +581,8 @@ test_mtb_str_sprintf(MtbArena arena)
     assert(mtb_str_is_equal(e2, a2));
 }
 
-intern void
-test_mtb_str_cmp(void)
+func void
+_test_mtb_str_cmp(void)
 {
     assert(mtb_str_is_equal(mtb_str_empty(), mtb_str_empty()));
     assert(mtb_str_cmp(mtb_str_lit("abcd"), mtb_str_empty()) > 0);
@@ -603,8 +603,8 @@ test_mtb_str_cmp(void)
     assert(mtb_str_cmp(mtb_str_lit("AbCd"), mtb_str_lit("aBcDe"), .ignoreCase = true) < 0);
 }
 
-intern void
-test_mtb_str_find(void)
+func void
+_test_mtb_str_find(void)
 {
     assert(mtb_str_find(mtb_str_lit("ABCDEFGHIJKLMNOPQRSTUVWXYZ"), mtb_str_empty()) == 0);
     assert(mtb_str_find(mtb_str_empty(), mtb_str_lit("ABCDEFGHIJKLMNOPQRSTUVWXYZ")) == MTB_STR_NOT_FOUND);
@@ -627,8 +627,8 @@ test_mtb_str_find(void)
     assert(!mtb_str_contains(mtb_str_lit("It's a Me, Mario!"), mtb_str_lit("wario"), .ignoreCase = true));
 }
 
-intern void
-test_mtb_str_has_prefix(void)
+func void
+_test_mtb_str_has_prefix(void)
 {
     assert(mtb_str_has_prefix(mtb_str_lit("Hello, World!"), mtb_str_empty()));
     assert(!mtb_str_has_prefix(mtb_str_empty(), mtb_str_lit("Hello, World!")));
@@ -643,8 +643,8 @@ test_mtb_str_has_prefix(void)
     assert(mtb_str_has_prefix(mtb_str_lit("Hello, World!"), mtb_str_lit("hello, world!"), .ignoreCase = true));
 }
 
-intern void
-test_mtb_str_has_suffix(void)
+func void
+_test_mtb_str_has_suffix(void)
 {
     assert(mtb_str_has_suffix(mtb_str_lit("Hello, World!"), mtb_str_empty()));
     assert(!mtb_str_has_suffix(mtb_str_empty(), mtb_str_lit("Hello, World!")));
@@ -659,8 +659,8 @@ test_mtb_str_has_suffix(void)
     assert(mtb_str_has_suffix(mtb_str_lit("Hello, World!"), mtb_str_lit("hello, world!"), .ignoreCase = true));
 }
 
-intern void
-test_mtb_str_trim(void)
+func void
+_test_mtb_str_trim(void)
 {
     assert(mtb_str_is_equal(mtb_str_trim(mtb_str_empty()), mtb_str_empty()));
     assert(mtb_str_is_equal(mtb_str_trim(mtb_str_lit(" \t\r\n\v\f")), mtb_str_empty()));
@@ -669,8 +669,8 @@ test_mtb_str_trim(void)
     assert(mtb_str_is_equal(mtb_str_trim(mtb_str_lit(" \t\r\n\v\fHello! \t\r\n\v\f")), mtb_str_lit("Hello!")));
 }
 
-intern void
-test_mtb_str_trim_beg(void)
+func void
+_test_mtb_str_trim_beg(void)
 {
     assert(mtb_str_is_equal(mtb_str_trim_beg(mtb_str_empty()), mtb_str_empty()));
     assert(mtb_str_is_equal(mtb_str_trim_beg(mtb_str_lit(" \t\r\n\v\f")), mtb_str_empty()));
@@ -679,8 +679,8 @@ test_mtb_str_trim_beg(void)
     assert(mtb_str_is_equal(mtb_str_trim_beg(mtb_str_lit(" \t\r\n\v\fHello! \t\r\n\v\f")), mtb_str_lit("Hello! \t\r\n\v\f")));
 }
 
-intern void
-test_mtb_str_trim_end(void)
+func void
+_test_mtb_str_trim_end(void)
 {
     assert(mtb_str_is_equal(mtb_str_trim_end(mtb_str_empty()), mtb_str_empty()));
     assert(mtb_str_is_equal(mtb_str_trim_end(mtb_str_lit(" \t\r\n\v\f")), mtb_str_empty()));
@@ -689,8 +689,8 @@ test_mtb_str_trim_end(void)
     assert(mtb_str_is_equal(mtb_str_trim_end(mtb_str_lit(" \t\r\n\v\fHello! \t\r\n\v\f")), mtb_str_lit(" \t\r\n\v\fHello!")));
 }
 
-intern void
-test_mtb_str_skip()
+func void
+_test_mtb_str_skip()
 {
     assert(mtb_str_is_equal(mtb_str_skip(mtb_str_empty(), 0), mtb_str_empty()));
     assert(mtb_str_is_equal(mtb_str_skip(mtb_str_lit("Hello, World!"), 0), mtb_str_lit("Hello, World!")));
@@ -698,8 +698,8 @@ test_mtb_str_skip()
     assert(mtb_str_is_equal(mtb_str_skip(mtb_str_lit("Hello, World!"), 13), mtb_str_empty()));
 }
 
-intern void
-test_mtb_str_chop()
+func void
+_test_mtb_str_chop()
 {
     assert(mtb_str_is_equal(mtb_str_chop(mtb_str_empty(), 0), mtb_str_empty()));
     assert(mtb_str_is_equal(mtb_str_chop(mtb_str_lit("Hello, World!"), 0), mtb_str_lit("Hello, World!")));
@@ -707,22 +707,22 @@ test_mtb_str_chop()
     assert(mtb_str_is_equal(mtb_str_chop(mtb_str_lit("Hello, World!"), 13), mtb_str_empty()));
 }
 
-intern void
-test_mtb_str_to_lower(MtbArena arena)
+func void
+_test_mtb_str_to_lower(MtbArena arena)
 {
     assert(mtb_str_is_equal(mtb_str_to_lower(&arena, mtb_str_empty()), mtb_str_empty()));
     assert(mtb_str_is_equal(mtb_str_to_lower(&arena, mtb_str_lit("Hello, World!")), mtb_str_lit("hello, world!")));
 }
 
-intern void
-test_mtb_str_to_upper(MtbArena arena)
+func void
+_test_mtb_str_to_upper(MtbArena arena)
 {
     assert(mtb_str_is_equal(mtb_str_to_upper(&arena, mtb_str_empty()), mtb_str_empty()));
     assert(mtb_str_is_equal(mtb_str_to_upper(&arena, mtb_str_lit("Hello, World!")), mtb_str_lit("HELLO, WORLD!")));
 }
 
-intern void
-test_mtb_str_dup(MtbArena arena)
+func void
+_test_mtb_str_dup(MtbArena arena)
 {
     MtbStr o1 = mtb_str_empty();
     MtbStr a1 = mtb_str_dup(&arena, o1);
@@ -735,8 +735,8 @@ test_mtb_str_dup(MtbArena arena)
     assert(mtb_str_is_equal(o2, a2));
 }
 
-intern void
-test_mtb_str_cat(MtbArena arena)
+func void
+_test_mtb_str_cat(MtbArena arena)
 {
     MtbStr e1 = mtb_str_empty();
     MtbStr a1 = mtb_str_cat(&arena, mtb_str_empty(), mtb_str_empty());
@@ -755,8 +755,8 @@ test_mtb_str_cat(MtbArena arena)
     assert(mtb_str_is_equal(e4, a4));
 }
 
-intern void
-test_mtb_str_substr(void)
+func void
+_test_mtb_str_substr(void)
 {
     MtbStr s = mtb_str_lit("Hello, World!");
     assert(mtb_str_is_equal(mtb_str_substr(s, 0, s.length), mtb_str_lit("Hello, World!")));
@@ -766,8 +766,8 @@ test_mtb_str_substr(void)
     assert(mtb_str_is_equal(mtb_str_substr(s, s.length, s.length), mtb_str_empty()));
 }
 
-intern void
-test_mtb_str_prefix()
+func void
+_test_mtb_str_prefix()
 {
     assert(mtb_str_is_equal(mtb_str_prefix(mtb_str_empty(), 0), mtb_str_empty()));
     assert(mtb_str_is_equal(mtb_str_prefix(mtb_str_lit("Hello, World!"), 0), mtb_str_empty()));
@@ -775,8 +775,8 @@ test_mtb_str_prefix()
     assert(mtb_str_is_equal(mtb_str_prefix(mtb_str_lit("Hello, World!"), 13), mtb_str_lit("Hello, World!")));
 }
 
-intern void
-test_mtb_str_suffix()
+func void
+_test_mtb_str_suffix()
 {
     assert(mtb_str_is_equal(mtb_str_suffix(mtb_str_empty(), 0), mtb_str_empty()));
     assert(mtb_str_is_equal(mtb_str_suffix(mtb_str_lit("Hello, World!"), 0), mtb_str_empty()));
@@ -784,8 +784,8 @@ test_mtb_str_suffix()
     assert(mtb_str_is_equal(mtb_str_suffix(mtb_str_lit("Hello, World!"), 13), mtb_str_lit("Hello, World!")));
 }
 
-intern void
-test_mtb_str_join(MtbArena arena)
+func void
+_test_mtb_str_join(MtbArena arena)
 {
     MtbStrList list = {0};
     mtb_str_list_init(&arena, &list);
@@ -851,8 +851,8 @@ test_mtb_str_join(MtbArena arena)
     assert(mtb_str_list_is_empty(&list));
 }
 
-intern void
-test_mtb_str_split(MtbArena arena)
+func void
+_test_mtb_str_split(MtbArena arena)
 {
     MtbStrList list = {0};
     mtb_str_list_init(&arena, &list);
@@ -910,30 +910,30 @@ test_mtb_str_split(MtbArena arena)
     assert(mtb_str_list_is_empty(&list));
 }
 
-intern void
-test_mtb_string(void)
+func void
+_test_mtb_string(void)
 {
     MtbArena arena = {0};
     mtb_arena_init(&arena, kb(1), &MTB_ARENA_DEF_ALLOCATOR);
 
-    test_mtb_str_cstr(arena);
-    test_mtb_str_sprintf(arena);
-    test_mtb_str_cmp();
-    test_mtb_str_find();
-    test_mtb_str_has_prefix();
-    test_mtb_str_has_suffix();
-    test_mtb_str_trim();
-    test_mtb_str_skip();
-    test_mtb_str_chop();
-    test_mtb_str_to_lower(arena);
-    test_mtb_str_to_upper(arena);
-    test_mtb_str_dup(arena);
-    test_mtb_str_cat(arena);
-    test_mtb_str_substr();
-    test_mtb_str_prefix();
-    test_mtb_str_suffix();
-    test_mtb_str_join(arena);
-    test_mtb_str_split(arena);
+    _test_mtb_str_cstr(arena);
+    _test_mtb_str_sprintf(arena);
+    _test_mtb_str_cmp();
+    _test_mtb_str_find();
+    _test_mtb_str_has_prefix();
+    _test_mtb_str_has_suffix();
+    _test_mtb_str_trim();
+    _test_mtb_str_skip();
+    _test_mtb_str_chop();
+    _test_mtb_str_to_lower(arena);
+    _test_mtb_str_to_upper(arena);
+    _test_mtb_str_dup(arena);
+    _test_mtb_str_cat(arena);
+    _test_mtb_str_substr();
+    _test_mtb_str_prefix();
+    _test_mtb_str_suffix();
+    _test_mtb_str_join(arena);
+    _test_mtb_str_split(arena);
 
     mtb_arena_deinit(&arena);
 }

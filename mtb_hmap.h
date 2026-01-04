@@ -52,13 +52,13 @@ struct mtb_hmap_init_options
 };
 
 
-public void mtb_hmap_init_opt(MtbHmap *hmap,
-                              MtbArena *arena,
-                              u64 keySize,
-                              u64 valueSize,
-                              u64 (*key_hash)(void *k),
-                              bool (*key_equals)(void *k1, void *k2),
-                              MtbHmapInitOptions opt);
+func void mtb_hmap_init_opt(MtbHmap *hmap,
+                            MtbArena *arena,
+                            u64 keySize,
+                            u64 valueSize,
+                            u64 (*key_hash)(void *k),
+                            bool (*key_equals)(void *k1, void *k2),
+                            MtbHmapInitOptions opt);
 #define mtb_hmap_init(hmap, arena, keyType, valueType, key_hash, key_equals, ...) \
     mtb_hmap_init_opt(hmap, \
                       arena, \
@@ -71,14 +71,14 @@ public void mtb_hmap_init_opt(MtbHmap *hmap,
                           .valueAlign = mtb_alignof(valueType), \
                           __VA_ARGS__ \
                       })
-public void mtb_hmap_clear(MtbHmap *hmap);
-public bool mtb_hmap_is_empty(MtbHmap *hmap);
-public void mtb_hmap_grow(MtbHmap *hmap, u64 capacity);
-public u64 mtb_hmap_calc_capacity(u64 n);
+func void mtb_hmap_clear(MtbHmap *hmap);
+func bool mtb_hmap_is_empty(MtbHmap *hmap);
+func void mtb_hmap_grow(MtbHmap *hmap, u64 capacity);
+func u64 mtb_hmap_calc_capacity(u64 n);
 
-public void *mtb_hmap_put(MtbHmap *hmap, void *key);
-public void *mtb_hmap_remove(MtbHmap *hmap, void *key);
-public void *mtb_hmap_get(MtbHmap *hmap, void *key);
+func void *mtb_hmap_put(MtbHmap *hmap, void *key);
+func void *mtb_hmap_remove(MtbHmap *hmap, void *key);
+func void *mtb_hmap_get(MtbHmap *hmap, void *key);
 
 
 /* Iterator API */
@@ -92,13 +92,13 @@ struct mtb_hmap_iter
 };
 
 
-public void mtb_hmap_iter_init(MtbHmapIter *it, MtbHmap *hmap);
-public void mtb_hmap_iter_reset(MtbHmapIter *it);
-public bool mtb_hmap_iter_has_next(MtbHmapIter *it);
-public void *mtb_hmap_iter_next(MtbHmapIter *it);
-public void *mtb_hmap_iter_next_key(MtbHmapIter *it);
-public void *mtb_hmap_iter_next_value(MtbHmapIter *it);
-public void *mtb_hmap_iter_remove(MtbHmapIter *it);
+func void mtb_hmap_iter_init(MtbHmapIter *it, MtbHmap *hmap);
+func void mtb_hmap_iter_reset(MtbHmapIter *it);
+func bool mtb_hmap_iter_has_next(MtbHmapIter *it);
+func void *mtb_hmap_iter_next(MtbHmapIter *it);
+func void *mtb_hmap_iter_next_key(MtbHmapIter *it);
+func void *mtb_hmap_iter_next_value(MtbHmapIter *it);
+func void *mtb_hmap_iter_remove(MtbHmapIter *it);
 
 #endif //MTB_HMAP_H
 
@@ -109,7 +109,7 @@ public void *mtb_hmap_iter_remove(MtbHmapIter *it);
 #define _mtb_hmap_modulo_capacity(hmap, n) ((n) & ((hmap)->capacity - 1))
 
 
-public void
+func void
 mtb_hmap_init_opt(MtbHmap *hmap,
                   MtbArena *arena,
                   u64 keySize,
@@ -141,20 +141,20 @@ mtb_hmap_init_opt(MtbHmap *hmap,
     hmap->key_equals = key_equals;
 }
 
-public void
+func void
 mtb_hmap_clear(MtbHmap *hmap)
 {
     hmap->count = 0;
     memset(hmap->entries, 0, hmap->capacity * hmap->entrySize);
 }
 
-public bool
+func bool
 mtb_hmap_is_empty(MtbHmap *hmap)
 {
     return hmap->count == 0;
 }
 
-public u64
+func u64
 mtb_hmap_calc_capacity(u64 n)
 {
     u64 capacity = n + (n / 3);
@@ -164,7 +164,7 @@ mtb_hmap_calc_capacity(u64 n)
     return mtb_roundup_pow2(capacity);
 }
 
-public void
+func void
 mtb_hmap_grow(MtbHmap *hmap, u64 capacity)
 {
     mtb_assert_always(mtb_is_pow2(capacity));
@@ -193,7 +193,7 @@ mtb_hmap_grow(MtbHmap *hmap, u64 capacity)
     }
 }
 
-public void *
+func void *
 mtb_hmap_put(MtbHmap *hmap, void *key)
 {
     if (hmap->count >= _mtb_hmap_threshold(hmap->capacity)) {
@@ -215,7 +215,7 @@ mtb_hmap_put(MtbHmap *hmap, void *key)
     return mtb_hmap_entry_value(hmap, entry);
 }
 
-public void *
+func void *
 mtb_hmap_remove(MtbHmap *hmap, void *key)
 {
     u64 hash = hmap->key_hash(key);
@@ -235,7 +235,7 @@ mtb_hmap_remove(MtbHmap *hmap, void *key)
     return nil;
 }
 
-public void *
+func void *
 mtb_hmap_get(MtbHmap *hmap, void *key)
 {
     u64 hash = hmap->key_hash(key);
@@ -253,21 +253,21 @@ mtb_hmap_get(MtbHmap *hmap, void *key)
     return nil;
 }
 
-public void
+func void
 mtb_hmap_iter_init(MtbHmapIter *it, MtbHmap *hmap)
 {
     it->hmap = hmap;
     mtb_hmap_iter_reset(it);
 }
 
-public void
+func void
 mtb_hmap_iter_reset(MtbHmapIter *it)
 {
     it->prev = nil;
     it->next = nil;
 }
 
-public bool
+func bool
 mtb_hmap_iter_has_next(MtbHmapIter *it)
 {
     u8 *next = it->prev == nil ? it->hmap->entries : it->prev + it->hmap->entrySize;
@@ -282,7 +282,7 @@ mtb_hmap_iter_has_next(MtbHmapIter *it)
     return false;
 }
 
-public void *
+func void *
 mtb_hmap_iter_next(MtbHmapIter *it)
 {
     mtb_assert_always(it->next != nil);
@@ -291,19 +291,19 @@ mtb_hmap_iter_next(MtbHmapIter *it)
     return it->prev;
 }
 
-public void *
+func void *
 mtb_hmap_iter_next_key(MtbHmapIter *it)
 {
     return mtb_hmap_entry_key(it->hmap, mtb_hmap_iter_next(it));
 }
 
-public void *
+func void *
 mtb_hmap_iter_next_value(MtbHmapIter *it)
 {
     return mtb_hmap_entry_value(it->hmap, mtb_hmap_iter_next(it));
 }
 
-public void *
+func void *
 mtb_hmap_iter_remove(MtbHmapIter *it)
 {
     mtb_assert_always(it->prev != nil);
@@ -321,8 +321,8 @@ mtb_hmap_iter_remove(MtbHmapIter *it)
 #include <string.h>
 
 
-intern u64
-calc_hash_str(void *key)
+func u64
+_calc_hash_str(void *key)
 {
     char *s = *(char **)key;
     u64 hash = 0;
@@ -330,16 +330,16 @@ calc_hash_str(void *key)
     return hash;
 }
 
-intern bool
-is_equal_str(void *key1, void *key2)
+func bool
+_is_equal_str(void *key1, void *key2)
 {
     char *s1 = *(char **)key1;
     char *s2 = *(char **)key2;
     return strcmp(s1, s2) == 0;
 }
 
-intern void
-test_mtb_hmap_calc_capacity(void)
+func void
+_test_mtb_hmap_calc_capacity(void)
 {
     for (u64 i = 0; i <= _mtb_hmap_threshold(MTB_HMAP_MIN_CAPACITY); i++) {
         assert(mtb_hmap_calc_capacity(i) == MTB_HMAP_MIN_CAPACITY);
@@ -352,8 +352,8 @@ test_mtb_hmap_calc_capacity(void)
     assert(mtb_hmap_calc_capacity(400) == 1024);
 }
 
-intern void
-test_mtb_hmap_put(MtbArena arena)
+func void
+_test_mtb_hmap_put(MtbArena arena)
 {
     char *text = "Lorem ipsum dolor sit amet consectetuer adipiscing elit Pellentesque ipsum Fusce"
                  " dui leo imperdiet in aliquam sit amet feugiat eu orci Etiam neque Fusce consect"
@@ -659,7 +659,7 @@ test_mtb_hmap_put(MtbArena arena)
     };
 
     MtbHmap hmap = {0};
-    mtb_hmap_init(&hmap, &arena, char *, u64, calc_hash_str, is_equal_str);
+    mtb_hmap_init(&hmap, &arena, char *, u64, _calc_hash_str, _is_equal_str);
     assert(mtb_hmap_is_empty(&hmap));
 
     char *textCopy = strcpy(mtb_arena_bump(&arena, char, strlen(text) + 1), text);
@@ -684,11 +684,11 @@ test_mtb_hmap_put(MtbArena arena)
     assert(mtb_hmap_is_empty(&hmap));
 }
 
-intern void
-test_mtb_hmap_remove(MtbArena arena)
+func void
+_test_mtb_hmap_remove(MtbArena arena)
 {
     MtbHmap hmap = {0};
-    mtb_hmap_init(&hmap, &arena, sizeof(char *), sizeof(u64), calc_hash_str, is_equal_str);
+    mtb_hmap_init(&hmap, &arena, sizeof(char *), sizeof(u64), _calc_hash_str, _is_equal_str);
 
     char *k1 = "Pizza";
     u64 v1 = 11;
@@ -704,11 +704,11 @@ test_mtb_hmap_remove(MtbArena arena)
     assert(mtb_hmap_is_empty(&hmap));
 }
 
-intern void
-test_mtb_hmap_iter(MtbArena arena)
+func void
+_test_mtb_hmap_iter(MtbArena arena)
 {
     MtbHmap hmap = {0};
-    mtb_hmap_init(&hmap, &arena, sizeof(char *), sizeof(u64), calc_hash_str, is_equal_str);
+    mtb_hmap_init(&hmap, &arena, sizeof(char *), sizeof(u64), _calc_hash_str, _is_equal_str);
 
     MtbHmapIter it = {0};
     mtb_hmap_iter_init(&it, &hmap);
@@ -777,16 +777,16 @@ test_mtb_hmap_iter(MtbArena arena)
     assert(!mtb_hmap_iter_has_next(&it));
 }
 
-intern void
-test_mtb_hmap(void)
+func void
+_test_mtb_hmap(void)
 {
     MtbArena arena = {0};
     mtb_arena_init(&arena, mb(1), &MTB_ARENA_DEF_ALLOCATOR);
 
-    test_mtb_hmap_put(arena);
-    test_mtb_hmap_remove(arena);
-    test_mtb_hmap_calc_capacity();
-    test_mtb_hmap_iter(arena);
+    _test_mtb_hmap_put(arena);
+    _test_mtb_hmap_remove(arena);
+    _test_mtb_hmap_calc_capacity();
+    _test_mtb_hmap_iter(arena);
 
     mtb_arena_deinit(&arena);
 }
@@ -802,8 +802,8 @@ test_mtb_hmap(void)
 #include <string.h>
 
 
-intern u64
-calc_hash_str(void *key)
+func u64
+_calc_hash_str(void *key)
 {
     char *s = *(char **)key;
     u64 hash = 0;
@@ -811,16 +811,16 @@ calc_hash_str(void *key)
     return hash;
 }
 
-intern bool
-is_equal_str(void *key1, void *key2)
+func bool
+_is_equal_str(void *key1, void *key2)
 {
     char *s1 = *(char **)key1;
     char *s2 = *(char **)key2;
     return strcmp(s1, s2) == 0;
 }
 
-intern void
-bench_mtb_hmap(void)
+func void
+_bench_mtb_hmap(void)
 {
     FILE *inputFile = fopen("data/shakespeare.txt", "r");
     fseek(inputFile, 0L, SEEK_END);
@@ -851,7 +851,7 @@ bench_mtb_hmap(void)
         MtbArena arenaTmp = arena;
 
         MtbHmap hmap = {0};
-        mtb_hmap_init(&hmap, &arenaTmp, char *, u64, calc_hash_str, is_equal_str);
+        mtb_hmap_init(&hmap, &arenaTmp, char *, u64, _calc_hash_str, _is_equal_str);
 
         MtbDynArrIter tokensIterator = {0};
         mtb_dynarr_iter_init(&tokensIterator, &tokens);
