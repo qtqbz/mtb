@@ -550,9 +550,6 @@ mtb_str_split_opt(MtbStrList *list, MtbStr str, MtbStr delim, MtbStrSplitOptions
 
 #ifdef MTB_STRING_TESTS
 
-#include <assert.h>
-
-
 func void
 _test_mtb_str_cstr(MtbArena arena)
 {

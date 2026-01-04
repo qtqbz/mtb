@@ -1,3 +1,8 @@
+#include <assert.h>
+#include <stdio.h>
+#include <string.h>
+#include <time.h>
+
 #define MTB_HMAP_BENCH
 #include "mtb_all.h"
 

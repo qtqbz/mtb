@@ -229,9 +229,6 @@ mtb_arena_clear(MtbArena *arena)
 
 #ifdef MTB_ARENA_TESTS
 
-#include <assert.h>
-
-
 func void
 _test_mtb_allocator(MtbArenaAllocator *allocator)
 {

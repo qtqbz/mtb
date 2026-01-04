@@ -306,9 +306,6 @@ mtb_char_to_upper(char c)
 
 #ifdef MTB_TYPE_TESTS
 
-#include <assert.h>
-
-
 func void
 _test_mtb_min(void)
 {

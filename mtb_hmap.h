@@ -317,10 +317,6 @@ mtb_hmap_iter_remove(MtbHmapIter *it)
 
 #ifdef MTB_HMAP_TESTS
 
-#include <assert.h>
-#include <string.h>
-
-
 func u64
 _calc_hash_str(void *key)
 {
@@ -795,12 +791,6 @@ _test_mtb_hmap(void)
 
 
 #ifdef MTB_HMAP_BENCH
-
-#include <assert.h>
-#include <stdio.h>
-#include <x86intrin.h>
-#include <string.h>
-
 
 func u64
 _calc_hash_str(void *key)

@@ -224,9 +224,6 @@ mtb_list_iter_remove(MtbListIter *it)
 
 #ifdef MTB_LIST_TESTS
 
-#include <assert.h>
-
-
 func void
 _test_mtb_list_list(void)
 {

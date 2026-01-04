@@ -220,9 +220,6 @@ mtb_segarr_iter_next(MtbSegArrIter *it)
 
 #ifdef MTB_SEGARR_TESTS
 
-#include <assert.h>
-
-
 func void
 _test_mtb_segarr_add_last(MtbArena arena)
 {

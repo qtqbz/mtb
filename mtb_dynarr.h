@@ -239,9 +239,6 @@ mtb_dynarr_iter_next(MtbDynArrIter *it)
 
 #ifdef MTB_DYNARR_TESTS
 
-#include <assert.h>
-
-
 func void
 _test_mtb_dynarr_insert(MtbArena arena)
 {

@@ -1,3 +1,8 @@
+#include <assert.h>
+#include <stdio.h>
+#include <string.h>
+#include <time.h>
+
 #define MTB_TYPE_TESTS
 #define MTB_LIST_TESTS
 #define MTB_ARENA_TESTS

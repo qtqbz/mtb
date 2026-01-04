@@ -7,6 +7,9 @@
 #define MTB_TYPE_IMPLEMENTATION
 #include "mtb_type.h"
 
+#define MTB_PERF_IMPLEMENTATION
+#include "mtb_perf.h"
+
 #define MTB_LIST_IMPLEMENTATION
 #include "mtb_list.h"
 
