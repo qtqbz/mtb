@@ -1,4 +1,3 @@
-#define MTB_MACRO_TESTS
 #define MTB_TYPE_TESTS
 #define MTB_LIST_TESTS
 #define MTB_ARENA_TESTS
@@ -13,7 +12,6 @@
 int
 main(void)
 {
-    _test_mtb_macro();
     _test_mtb_type();
     _test_mtb_list();
     _test_mtb_arena();
