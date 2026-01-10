@@ -45,13 +45,6 @@ struct mtb_arena
     MtbArenaAllocator *allocator;
 };
 
-typedef struct mtb_arena_save_point MtbArenaSavePoint;
-struct mtb_arena_save_point
-{
-    MtbArena *arena;
-    u64 offset;
-};
-
 typedef struct mtb_arena_bump_options MtbArenaBumpOptions;
 struct mtb_arena_bump_options
 {
@@ -67,9 +60,6 @@ func void *mtb_arena_bump_opt(MtbArena *arena, u64 size, MtbArenaBumpOptions opt
     mtb_arena_bump_opt(arena, size, (MtbArenaBumpOptions){ __VA_ARGS__ })
 #define mtb_arena_bump(arena, type, count, ...) \
     (type *)mtb_arena_bump_opt(arena, mtb_mul_u64(sizeof(type), (count)), (MtbArenaBumpOptions){ .align = mtb_alignof(type), __VA_ARGS__ })
-
-func MtbArenaSavePoint mtb_arena_save(MtbArena *arena);
-func void mtb_arena_restore(MtbArena *arena, MtbArenaSavePoint *sp);
 
 func void mtb_arena_clear(MtbArena *arena);
 
@@ -202,22 +192,6 @@ mtb_arena_bump_opt(MtbArena *arena, u64 size, MtbArenaBumpOptions opt)
     return opt.no_zero ? result : memset(result, 0, size);
 }
 
-func MtbArenaSavePoint
-mtb_arena_save(MtbArena *arena)
-{
-    MtbArenaSavePoint sp = {0};
-    sp.arena = arena;
-    sp.offset = arena->offset;
-    return sp;
-}
-
-func void
-mtb_arena_restore(MtbArena *arena, MtbArenaSavePoint *sp)
-{
-    mtb_assert_always(arena == sp->arena);
-    arena->offset = sp->offset;
-}
-
 func void
 mtb_arena_clear(MtbArena *arena)
 {
@@ -255,13 +229,6 @@ _test_mtb_allocator(MtbArenaAllocator *allocator)
     for (u32 i = 0; i < pageSize; i++) assert(page[i] == 0);      // is zeroed out
     for (u32 i = 0; i < pageSize; i++) page[i] = U8_MAX;          // is writable
     for (u32 i = 0; i < pageSize; i++) assert(page[i] == U8_MAX); // is readable
-
-    // save/restore
-    MtbArenaSavePoint sp = mtb_arena_save(&arena);
-    assert(mtb_arena_bump(&arena, u8, 8) != nil);
-    assert(arena.offset != sp.offset);
-    mtb_arena_restore(&arena, &sp);
-    assert(arena.offset == sp.offset);
 
     // clear
     assert(arena.offset != 0);
