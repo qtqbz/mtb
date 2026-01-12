@@ -190,6 +190,9 @@ mtb_rng64_global_next_unit(void)
 
 #ifdef MTB_RNG_TESTS
 
+#include <assert.h>
+
+
 func void
 _test_mtb_rng32()
 {

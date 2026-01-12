@@ -11,7 +11,7 @@ This is a collection of reusable C utils.
 
 ### Contents
 
-- [mtb_all.h](./mtb_all.h) - contains all of MTB.
+- [mtb.h](mtb.h) - contains all of MTB.
 - [mtb_macro.h](./mtb_macro.h) - common macros.
 - [mtb_type.h](./mtb_type.h) - common types and operations on them.
 - [mtb_list.h](./mtb_list.h) - doubly linked list.

@@ -1,18 +1,6 @@
-#include <assert.h>
-#include <stdio.h>
-#include <string.h>
-#include <time.h>
-
-#define MTB_TYPE_TESTS
-#define MTB_LIST_TESTS
-#define MTB_ARENA_TESTS
-#define MTB_DYNARR_TESTS
-#define MTB_SEGARR_TESTS
-#define MTB_HMAP_TESTS
-#define MTB_STRING_TESTS
-#define MTB_RNG_TESTS
-#include "mtb_all.h"
-
+#define MTB_IMPLEMENTATION
+#define MTB_TESTS
+#include "mtb.h"
 
 int
 main(void)

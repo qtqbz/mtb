@@ -2,9 +2,9 @@
 #define MTB_TYPE_H
 
 #include <float.h>
-#include <stdint.h>
-#include <stdbool.h>
 #include <limits.h>
+#include <stdbool.h>
+#include <stdint.h>
 
 
 /* Type Aliases */
@@ -305,6 +305,9 @@ mtb_char_to_upper(char c)
 
 
 #ifdef MTB_TYPE_TESTS
+
+#include <assert.h>
+
 
 func void
 _test_mtb_min(void)

@@ -159,8 +159,8 @@ mtb_str_key_equals(void *key1, void *key2)
 
 #ifdef MTB_STRING_IMPLEMENTATION
 
-#include <string.h>
 #include <stdio.h>
+#include <string.h>
 
 
 func MtbStr
@@ -549,6 +549,9 @@ mtb_str_split_opt(MtbStrList *list, MtbStr str, MtbStr delim, MtbStrSplitOptions
 
 
 #ifdef MTB_STRING_TESTS
+
+#include <assert.h>
+
 
 func void
 _test_mtb_str_cstr(MtbArena arena)
