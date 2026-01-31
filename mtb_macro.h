@@ -31,7 +31,7 @@
 #define _mtb_cat(a, b) a##b
 #define mtb_cat(a, b) _mtb_cat(a, b)
 
-#define mtb_id(a) mtb_cat(a, __COUNTER__)
+#define mtb_id(a)  mtb_cat(mtb_cat(a, __LINE__), _id_)
 
 
 /* Array Helpers */
@@ -89,6 +89,10 @@
 #define kilo(n) ((u64)((n) * 1000))
 #define mega(n) ((u64)((n) * 1000000))
 #define giga(n) ((u64)((n) * 1000000000))
+
+#define thousand(n) kilo(n)
+#define million(n)  mega(n)
+#define billion(n)  giga(n)
 
 
 /* Debug Helpers */

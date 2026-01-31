@@ -1,6 +1,7 @@
 COMMON_CFLAGS := -DMTB_DEBUG \
                  -I. \
                  -lm \
+                 -lrt \
                  -std=c99 \
                  -O0 \
                  -g3 \

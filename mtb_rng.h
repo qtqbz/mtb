@@ -191,6 +191,7 @@ mtb_rng64_global_next_unit(void)
 #ifdef MTB_RNG_TESTS
 
 #include <assert.h>
+#include <time.h>
 
 
 func void

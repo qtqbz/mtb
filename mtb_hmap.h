@@ -818,6 +818,8 @@ _is_equal_str(void *key1, void *key2)
 func void
 _bench_mtb_hmap(void)
 {
+    mtb_perf_start();
+
     FILE *inputFile = fopen("data/shakespeare.txt", "r");
     fseek(inputFile, 0L, SEEK_END);
     u64 inputFileSize = ftell(inputFile);
@@ -841,7 +843,6 @@ _bench_mtb_hmap(void)
         token = strtok(nil, " \n");
     }
 
-    f64 avgDuration = 0;
     i32 iterationCount = 1000;
     for (i32 i = 0; i < iterationCount; i++) {
         MtbArena arenaTmp = arena;
@@ -852,22 +853,18 @@ _bench_mtb_hmap(void)
         MtbDynArrIter tokensIterator = {0};
         mtb_dynarr_iter_init(&tokensIterator, &tokens);
 
-        u64 start = __rdtsc();
-
         while (mtb_dynarr_iter_has_next(&tokensIterator)) {
             char *token = *(char **)mtb_dynarr_iter_next(&tokensIterator);
+            mtb_perf_time_block("get");
             u64 *count = mtb_hmap_get(&hmap, &token);
             if (count == nil) {
+                mtb_perf_time_block("put");
                 *(u64 *)mtb_hmap_put(&hmap, &token) = 1;
             }
             else {
                 *count += 1;
             }
         }
-
-        u64 end = __rdtsc();
-        u64 duration = end - start;
-        avgDuration = ((f64)duration - avgDuration) / (f64)(i + 1);
 
         // sanity check
         struct histogram {
@@ -885,7 +882,7 @@ _bench_mtb_hmap(void)
             assert(*(u64 *)mtb_hmap_get(&hmap, &wc->word) == wc->count);
         }
     }
-    printf("iterationCount: %d, avgDuration: %.3f ticks\n", iterationCount, avgDuration);
+    mtb_perf_print();
 
     mtb_arena_deinit(&arena);
 }

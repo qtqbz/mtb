@@ -17,18 +17,6 @@ func void *mtb_arena_def_alloc(void *ctx, void *ptr, u64 size);
 func u64 mtb_arena_def_virt_size(void *ctx, void *ptr);
 func void *mtb_arena_def_virt_alloc(void *ctx, void *ptr, u64 size);
 
-global MtbArenaAllocator MTB_ARENA_DEF_ALLOCATOR = {
-    .ctx = nil,
-    .alloc = mtb_arena_def_alloc,
-    .size = mtb_arena_def_size,
-};
-
-global MtbArenaAllocator MTB_ARENA_DEF_VIRT_ALLOCATOR = {
-    .ctx = nil,
-    .alloc = mtb_arena_def_virt_alloc,
-    .size = mtb_arena_def_virt_size,
-};
-
 
 /* Arena */
 
@@ -75,6 +63,20 @@ func void mtb_arena_clear(MtbArena *arena);
 
 
 #define MTB_ARENA_DEF_ALLOCATOR_HEADER_SIZE sizeof(u64)
+
+
+global MtbArenaAllocator MTB_ARENA_DEF_ALLOCATOR = {
+    .ctx = nil,
+    .alloc = mtb_arena_def_alloc,
+    .size = mtb_arena_def_size,
+};
+
+global MtbArenaAllocator MTB_ARENA_DEF_VIRT_ALLOCATOR = {
+    .ctx = nil,
+    .alloc = mtb_arena_def_virt_alloc,
+    .size = mtb_arena_def_virt_size,
+};
+
 
 func u64
 mtb_arena_def_size(void *ctx, void *ptr)
