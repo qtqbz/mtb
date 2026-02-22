@@ -1,6 +1,15 @@
 #ifndef MTB_LIST_H
 #define MTB_LIST_H
 
+#ifdef MTB_IMPLEMENTATION
+#define MTB_LIST_IMPLEMENTATION
+#endif
+
+#ifdef MTB_TESTS
+#define MTB_LIST_TESTS
+#endif
+
+
 typedef struct mtb_list_node MtbList;
 struct mtb_list_node
 {

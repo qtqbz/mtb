@@ -1,5 +1,14 @@
-#ifndef MTB_MTB_RNG_H
-#define MTB_MTB_RNG_H
+#ifndef MTB_RNG_H
+#define MTB_RNG_H
+
+#ifdef MTB_IMPLEMENTATION
+#define MTB_RNG_IMPLEMENTATION
+#endif
+
+#ifdef MTB_TESTS
+#define MTB_RNG_TESTS
+#endif
+
 
 // Based on "PCG: A Family of Simple Fast Space-Efficient Statistically Good Algorithms
 // for Random Number Generation", M.E. O'Neill, 2014, https://www.pcg-random.org
@@ -42,7 +51,7 @@ func f64 mtb_rng64_next_unit(MtbRng64 *rng);
 func f32 mtb_rng32_global_next_unit(void);
 func f64 mtb_rng64_global_next_unit(void);
 
-#endif //MTB_MTB_RNG_H
+#endif //MTB_RNG_H
 
 
 #ifdef MTB_RNG_IMPLEMENTATION

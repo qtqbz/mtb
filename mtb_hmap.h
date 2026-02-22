@@ -1,6 +1,19 @@
 #ifndef MTB_HMAP_H
 #define MTB_HMAP_H
 
+#ifdef MTB_IMPLEMENTATION
+#define MTB_HMAP_IMPLEMENTATION
+#endif
+
+#ifdef MTB_TESTS
+#define MTB_HMAP_TESTS
+#endif
+
+#ifdef MTB_BENCH
+#define MTB_HMAP_BENCH
+#endif
+
+
 #ifndef MTB_HMAP_MIN_CAPACITY
 #define MTB_HMAP_MIN_CAPACITY 16
 #endif

@@ -1,5 +1,14 @@
-#ifndef MTB_MTB_DYNARR_H
-#define MTB_MTB_DYNARR_H
+#ifndef MTB_DYNARR_H
+#define MTB_DYNARR_H
+
+#ifdef MTB_IMPLEMENTATION
+#define MTB_DYNARR_IMPLEMENTATION
+#endif
+
+#ifdef MTB_TESTS
+#define MTB_DYNARR_TESTS
+#endif
+
 
 typedef struct mtb_dynarr MtbDynArr;
 struct mtb_dynarr
@@ -63,7 +72,7 @@ func bool mtb_dynarr_iter_has_next(MtbDynArrIter *it);
 func void *mtb_dynarr_iter_next(MtbDynArrIter *it);
 
 
-#endif //MTB_MTB_DYNARR_H
+#endif //MTB_DYNARR_H
 
 
 #ifdef MTB_DYNARR_IMPLEMENTATION

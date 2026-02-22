@@ -1,5 +1,14 @@
-#ifndef MTB_MTB_SEGARR_H
-#define MTB_MTB_SEGARR_H
+#ifndef MTB_SEGARR_H
+#define MTB_SEGARR_H
+
+#ifdef MTB_IMPLEMENTATION
+#define MTB_SEGARR_IMPLEMENTATION
+#endif
+
+#ifdef MTB_TESTS
+#define MTB_SEGARR_TESTS
+#endif
+
 
 #ifndef MTB_SEGARR_SKIP_SEGMENTS
 #define MTB_SEGARR_SKIP_SEGMENTS 4
@@ -100,7 +109,7 @@ func void mtb_segarr_iter_reset(MtbSegArrIter *it);
 func bool mtb_segarr_iter_has_next(MtbSegArrIter *it);
 func void *mtb_segarr_iter_next(MtbSegArrIter *it);
 
-#endif //MTB_MTB_SEGARR_H
+#endif //MTB_SEGARR_H
 
 
 #ifdef MTB_SEGARR_IMPLEMENTATION

@@ -1,12 +1,30 @@
 # MyToolBox (MTB)
 
-This is a collection of reusable C utils.
+This is a collection of single-header C libraries.
+It's designed to be used in programs that are [compiled as a single unit](https://en.wikipedia.org/wiki/Single_compilation_unit).
 
 
 ### Requirements
 
 1. GCC or Clang
 2. C99+ codebase
+
+
+### Usage
+
+The simplest way is to copy the whole [mtb.h](mtb.h) directly into your project and include it like this:
+
+```c
+#define MTB_IMPLEMENTATION
+#include "mtb.h"
+```
+
+It's also possible to include just parts of the library as follows:
+
+```c
+#define MTB_IMPLEMENTATION
+#include "mtb_arena.h"
+```
 
 
 ### Contents

@@ -1,6 +1,15 @@
 #ifndef MTB_TYPE_H
 #define MTB_TYPE_H
 
+#ifdef MTB_IMPLEMENTATION
+#define MTB_TYPE_IMPLEMENTATION
+#endif
+
+#ifdef MTB_TESTS
+#define MTB_TYPE_TESTS
+#endif
+
+
 #include <float.h>
 #include <limits.h>
 #include <stdbool.h>

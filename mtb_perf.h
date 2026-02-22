@@ -1,6 +1,11 @@
 #ifndef MTB_PERF_H
 #define MTB_PERF_H
 
+#ifdef MTB_IMPLEMENTATION
+#define MTB_PERF_IMPLEMENTATION
+#endif
+
+
 
 #ifndef MTB_PERF_BLOCKS_MAX
 #define MTB_PERF_BLOCKS_MAX 4096

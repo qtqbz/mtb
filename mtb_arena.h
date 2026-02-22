@@ -1,6 +1,15 @@
 #ifndef MTB_ARENA_H
 #define MTB_ARENA_H
 
+#ifdef MTB_IMPLEMENTATION
+#define MTB_ARENA_IMPLEMENTATION
+#endif
+
+#ifdef MTB_TESTS
+#define MTB_ARENA_TESTS
+#endif
+
+
 /* Arena Allocator */
 
 typedef struct mtb_arena_allocator MtbArenaAllocator;

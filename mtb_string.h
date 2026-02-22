@@ -1,6 +1,15 @@
 #ifndef MTB_STRING_H
 #define MTB_STRING_H
 
+#ifdef MTB_IMPLEMENTATION
+#define MTB_STRING_IMPLEMENTATION
+#endif
+
+#ifdef MTB_TESTS
+#define MTB_STRING_TESTS
+#endif
+
+
 #include <stdarg.h>
 
 
